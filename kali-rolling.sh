@@ -369,7 +369,7 @@ start_time=$(date +%s)
 #(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) ${GREEN}Updating OS${RESET} from network repositories"
 #echo -e " ${YELLOW}[i]${RESET}  ...this ${BOLD}may take a while${RESET} depending on your Internet connection & Kali version/age"
 #for FILE in clean autoremove; do apt -y -qq "${FILE}"; done         # Clean up      clean remove autoremove autoclean
-#export DEBIAN_FRONTEND=noninteractive
+export DEBIAN_FRONTEND=noninteractive
 #apt -qq update && APT_LISTCHANGES_FRONTEND=none apt -o Dpkg::Options::="--force-confnew" -y dist-upgrade --fix-missing 2>&1 \
 #  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 #--- Cleaning up temp stuff
@@ -1824,10 +1824,17 @@ done
 apt -y -qq install exe2hexbat \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 
-
 ##### Install MPC
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}MPC${RESET} ~ Msfvenom Payload Creator"
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}MPC${RESET} ~ Sublime Text"
 apt -y -qq install msfpc \
+  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
+  
+##### Install Sublime
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}MPC${RESET} ~ Msfvenom Payload Creator"
+wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add - \
+echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list \
+apt-get update \
+apt-get install sublime-text \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 
 
