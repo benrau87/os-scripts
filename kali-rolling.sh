@@ -253,58 +253,58 @@ fi
 
 
 ##### Check to see if Kali is in a VM. If so, install "Virtual Machine Addons/Tools" for a "better" virtual experiment
-if (dmidecode | grep -iq vmware); then
+#if (dmidecode | grep -iq vmware); then
   ##### Install virtual machines tools ~ http://docs.kali.org/general-use/install-vmware-tools-kali-guest
-  (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}VMware's (open) virtual machine tools${RESET}"
-  apt -y -qq install open-vm-tools-desktop fuse \
-    || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-  apt -y -qq install make \
-    || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2    # There's a nags afterwards
+#  (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}VMware's (open) virtual machine tools${RESET}"
+#  apt -y -qq install open-vm-tools-desktop fuse \
+#    || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
+#  apt -y -qq install make \
+#    || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2    # There's a nags afterwards
   ## Shared folders support for Open-VM-Tools (some odd bug)
-  file=/usr/local/sbin/mount-shared-folders; [ -e "${file}" ] && cp -n $file{,.bkup}
-  cat <<EOF > "${file}" \
-    || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
-#!/bin/bash
+ # file=/usr/local/sbin/mount-shared-folders; [ -e "${file}" ] && cp -n $file{,.bkup}
+  #cat <<EOF > "${file}" \
+   # || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
+##!/bin/bash
 
-vmware-hgfsclient | while read folder; do
-  echo "[i] Mounting \${folder}   (/mnt/hgfs/\${folder})"
-  mkdir -p "/mnt/hgfs/\${folder}"
-  umount -f "/mnt/hgfs/\${folder}" 2>/dev/null
-  vmhgfs-fuse -o allow_other -o auto_unmount ".host:/\${folder}" "/mnt/hgfs/\${folder}"
-done
+#vmware-hgfsclient | while read folder; do
+##  echo "[i] Mounting \${folder}   (/mnt/hgfs/\${folder})"
+#  mkdir -p "/mnt/hgfs/\${folder}"
+#  umount -f "/mnt/hgfs/\${folder}" 2>/dev/null
+#  vmhgfs-fuse -o allow_other -o auto_unmount ".host:/\${folder}" "/mnt/hgfs/\${folder}"
+#done
 
-sleep 2s
-EOF
-  chmod +x "${file}"
-  ln -sf "${file}" /root/Desktop/mount-shared-folders.sh
-elif (dmidecode | grep -iq virtualbox); then
+#sleep 2s
+#EOF
+#  chmod +x "${file}"
+#  ln -sf "${file}" /root/Desktop/mount-shared-folders.sh
+#elif (dmidecode | grep -iq virtualbox); then
   ##### Installing VirtualBox Guest Additions.   Note: Need VirtualBox 4.2.xx+ for the host (http://docs.kali.org/general-use/kali-linux-virtual-box-guest)
-  (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}VirtualBox's guest additions${RESET}"
-  apt -y -qq install virtualbox-guest-x11 \
-    || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-fi
+ # (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}VirtualBox's guest additions${RESET}"
+ # apt -y -qq install virtualbox-guest-x11 \
+ #   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
+#fi
 
 
-##### Check to see if there is a second Ethernet card (if so, set an static IP address)
-ip addr show eth1 &>/dev/null
-if [[ "$?" == 0 ]]; then
+##### Check to see if there is a second Ethernet card (if so, set an static IP address)#
+#ip addr show eth1 &>/dev/null
+#if [[ "$?" == 0 ]]; then
   ##### Set a static IP address (192.168.155.175/24) on eth1
-  (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Setting a ${GREEN}static IP address${RESET} (${BOLD}192.168.155.175/24${RESET}) on ${BOLD}eth1${RESET}"
-  ip addr add 192.168.155.175/24 dev eth1 2>/dev/null
-  route delete default gw 192.168.155.1 2>/dev/null
-  file=/etc/network/interfaces.d/eth1.cfg; [ -e "${file}" ] && cp -n $file{,.bkup}
-  grep -q '^iface eth1 inet static' "${file}" 2>/dev/null \
-    || cat <<EOF > "${file}"
-auto eth1
-iface eth1 inet static
-    address 192.168.155.175
-    netmask 255.255.255.0
-    gateway 192.168.155.1
-    post-up route delete default gw 192.168.155.1
-EOF
-else
-  echo -e "\n\n ${YELLOW}[i]${RESET} ${YELLOW}Skipping eth1${RESET} (missing nic)..." 1>&2
-fi
+ # (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Setting a ${GREEN}static IP address${RESET} (${BOLD}192.168.155.175/24${RESET}) on ${BOLD}eth1${RESET}"
+ # ip addr add 192.168.155.175/24 dev eth1 2>/dev/null
+ # route delete default gw 192.168.155.1 2>/dev/null
+ # file=/etc/network/interfaces.d/eth1.cfg; [ -e "${file}" ] && cp -n $file{,.bkup}
+ # grep -q '^iface eth1 inet static' "${file}" 2>/dev/null \
+  #  || cat <<EOF > "${file}"
+#auto eth1
+#iface eth1 inet static
+#    address 192.168.155.175
+#    netmask 255.255.255.0
+#    gateway 192.168.155.1
+#    post-up route delete default gw 192.168.155.1
+#EOF
+#else
+ # echo -e "\n\n ${YELLOW}[i]${RESET} ${YELLOW}Skipping eth1${RESET} (missing nic)..." 1>&2
+#fi
 
 
 ##### Set static & protecting DNS name servers.   Note: May cause issues with forced values (e.g. captive portals etc)
