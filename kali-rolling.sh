@@ -3252,7 +3252,7 @@ cat <<EOF > "${file}" \
   || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
 #!/bin/bash
 
-cd /opt/wig-git/ && python wig.py "\$@"
+cd /opt/wig-git/ && python3 wig.py "\$@"
 EOF
 chmod +x "${file}"
 
