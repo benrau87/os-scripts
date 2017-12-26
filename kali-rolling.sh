@@ -261,28 +261,29 @@ if (dmidecode | grep -iq vmware); then
   apt -y -qq install make \
    || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2    # There's a nags afterwards
   ## Shared folders support for Open-VM-Tools (some odd bug)
- # file=/usr/local/sbin/mount-shared-folders; [ -e "${file}" ] && cp -n $file{,.bkup}
-  #cat <<EOF > "${file}" \
-   # || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
-##!/bin/bash
+  file=/usr/local/sbin/mount-shared-folders; [ -e "${file}" ] && cp -n $file{,.bkup}
+  cat <<EOF > "${file}" \
+    || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
+    
+ #!/bin/bash
 
-#vmware-hgfsclient | while read folder; do
-##  echo "[i] Mounting \${folder}   (/mnt/hgfs/\${folder})"
-#  mkdir -p "/mnt/hgfs/\${folder}"
-#  umount -f "/mnt/hgfs/\${folder}" 2>/dev/null
-#  vmhgfs-fuse -o allow_other -o auto_unmount ".host:/\${folder}" "/mnt/hgfs/\${folder}"
-#done
+vmware-hgfsclient | while read folder; do
+  echo "[i] Mounting \${folder}   (/mnt/hgfs/\${folder})"
+  mkdir -p "/mnt/hgfs/\${folder}"
+  umount -f "/mnt/hgfs/\${folder}" 2>/dev/null
+  vmhgfs-fuse -o allow_other -o auto_unmount ".host:/\${folder}" "/mnt/hgfs/\${folder}"
+done
 
-#sleep 2s
-#EOF
-#  chmod +x "${file}"
-#  ln -sf "${file}" /root/Desktop/mount-shared-folders.sh
-#elif (dmidecode | grep -iq virtualbox); then
+sleep 2s
+EOF
+  chmod +x "${file}"
+  ln -sf "${file}" /root/Desktop/mount-shared-folders.sh
+elif (dmidecode | grep -iq virtualbox); then
   ##### Installing VirtualBox Guest Additions.   Note: Need VirtualBox 4.2.xx+ for the host (http://docs.kali.org/general-use/kali-linux-virtual-box-guest)
- # (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}VirtualBox's guest additions${RESET}"
- # apt -y -qq install virtualbox-guest-x11 \
- #   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-#fi
+  (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}VirtualBox's guest additions${RESET}"
+  apt -y -qq install virtualbox-guest-x11 \
+    || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
+fi
 
 
 ##### Check to see if there is a second Ethernet card (if so, set an static IP address)#
