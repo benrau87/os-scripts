@@ -1706,11 +1706,11 @@ mkdir -p ~/.msf4/modules/{auxiliary,exploits,payloads,post}/
 #([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
 #grep -q '^GOCOW' "${file}" 2>/dev/null || echo 'GOCOW=1' >> "${file}"
 #--- Fix any port issues
-file=$(find /etc/postgresql/*/main/ -maxdepth 1 -type f -name postgresql.conf -print -quit);
-[ -e "${file}" ] && cp -n $file{,.bkup}
-sed -i 's/port = .* #/port = 5432 /' "${file}"
+#file=$(find /etc/postgresql/*/main/ -maxdepth 1 -type f -name postgresql.conf -print -quit);
+#[ -e "${file}" ] && cp -n $file{,.bkup}
+#sed -i 's/port = .* #/port = 5432 /' "${file}"
 #--- Fix permissions - 'could not translate host name "localhost", service "5432" to address: Name or service not known'
-chmod 0644 /etc/hosts
+#chmod 0644 /etc/hosts
 #--- Start services
 systemctl stop postgresql
 systemctl start postgresql
