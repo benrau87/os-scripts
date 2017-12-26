@@ -1806,20 +1806,6 @@ msfdb start
 msfconsole -q -x 'version;db_status;sleep 310;exit'
 
 
-##### Configuring armitage
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Configuring ${GREEN}armitage${RESET} ~ GUI Metasploit UI"
-export MSF_DATABASE_CONFIG=/usr/share/metasploit-framework/config/database.yml
-for file in /etc/bash.bashrc ~/.zshrc; do     #~/.bashrc
-  [ ! -e "${file}" ] && continue
-  [ -e "${file}" ] && cp -n $file{,.bkup}
-  ([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
-  grep -q 'MSF_DATABASE_CONFIG' "${file}" 2>/dev/null \
-    || echo -e 'MSF_DATABASE_CONFIG=/usr/share/metasploit-framework/config/database.yml\n' >> "${file}"
-done
-#--- Test
-#msfrpcd -U msf -P test -f -S -a 127.0.0.1
-
-
 ##### Install exe2hex
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}exe2hex${RESET} ~ Inline file transfer"
 apt -y -qq install exe2hexbat \
