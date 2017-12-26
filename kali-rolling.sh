@@ -1715,6 +1715,7 @@ chmod 0644 /etc/hosts
 systemctl stop postgresql
 systemctl start postgresql
 msfdb reinit
+update-rc.d postgresql enable
 sleep 5s
 #--- Autorun Metasploit commands each startup
 file=~/.msf4/msf_autorunscript.rc; [ -e "${file}" ] && cp -n $file{,.bkup}
@@ -1818,12 +1819,10 @@ apt -y -qq install msfpc \
   
 ##### Install Sublime
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}MPC${RESET} ~ Sublime Text"
-wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add - \
-echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list \
-apt-get update \
-apt-get install sublime-text \
-  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-
+wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add - 
+echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list 
+apt-get update 
+apt-get install sublime-text
 
 ##### Configuring Gedit
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Configuring ${GREEN}Gedit${RESET} ~ GUI text editor"
@@ -1884,43 +1883,43 @@ apt -y -qq install vbindiff \
 
 
 ##### Install OpenVAS
-if [[ "${openVAS}" != "false" ]]; then
-  (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}OpenVAS${RESET} ~ vulnerability scanner"
-  apt -y -qq install openvas \
-    || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-  openvas-setup
+#if [[ "${openVAS}" != "false" ]]; then
+#  (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}OpenVAS${RESET} ~ vulnerability scanner"
+#  apt -y -qq install openvas \
+#    || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
+#  openvas-setup
   #--- Bug fix (target credentials creation)
-  mkdir -p /var/lib/openvas/gnupg/
+#  mkdir -p /var/lib/openvas/gnupg/
   #--- Bug fix (keys)
-  curl --progress -k -L -f "http://www.openvas.org/OpenVAS_TI.asc" | gpg --import - \
-    || echo -e ' '${RED}'[!]'${RESET}" Issue downloading OpenVAS_TI.asc" 1>&2
+#  curl --progress -k -L -f "http://www.openvas.org/OpenVAS_TI.asc" | gpg --import - \
+#    || echo -e ' '${RED}'[!]'${RESET}" Issue downloading OpenVAS_TI.asc" 1>&2
   #--- Make sure all services are correct
-  openvas-start
+#  openvas-start
   #--- User control
-  username="root"
-  password="toor"
-  (openvasmd --get-users | grep -q ^admin$) \
-    && echo -n 'admin user: ' \
-    && openvasmd --delete-user=admin
-  (openvasmd --get-users | grep -q "^${username}$") \
-    || (echo -n "${username} user: "; openvasmd --create-user="${username}"; openvasmd --user="${username}" --new-password="${password}" >/dev/null)
-  echo -e " ${YELLOW}[i]${RESET} OpenVAS username: ${username}"
-  echo -e " ${YELLOW}[i]${RESET} OpenVAS password: ${password}   ***${BOLD}CHANGE THIS ASAP${RESET}***"
-  echo -e " ${YELLOW}[i]${RESET} Run: # openvasmd --user=root --new-password='<NEW_PASSWORD>'"
-  sleep 3s
-  openvas-check-setup
+#  username="root"
+#  password="toor"
+#  (openvasmd --get-users | grep -q ^admin$) \
+#    && echo -n 'admin user: ' \
+#    && openvasmd --delete-user=admin
+#  (openvasmd --get-users | grep -q "^${username}$") \
+#    || (echo -n "${username} user: "; openvasmd --create-user="${username}"; openvasmd --user="${username}" --new-password="${password}" >/dev/null)
+#  echo -e " ${YELLOW}[i]${RESET} OpenVAS username: ${username}"
+#  echo -e " ${YELLOW}[i]${RESET} OpenVAS password: ${password}   ***${BOLD}CHANGE THIS ASAP${RESET}***"
+#  echo -e " ${YELLOW}[i]${RESET} Run: # openvasmd --user=root --new-password='<NEW_PASSWORD>'"
+#  sleep 3s
+#  openvas-check-setup
   #--- Remove from start up
-  systemctl disable openvas-manager
-  systemctl disable openvas-scanner
-  systemctl disable greenbone-security-assistant
+#  systemctl disable openvas-manager
+#  systemctl disable openvas-scanner
+#  systemctl disable greenbone-security-assistant
   #--- Setup alias
-  file=~/.bash_aliases; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/bash.bash_aliases
-  grep -q '^## openvas' "${file}" 2>/dev/null \
-    || echo -e '## openvas\nalias openvas="openvas-stop; openvas-start; sleep 3s; xdg-open https://127.0.0.1:9392/ >/dev/null 2>&1"\n' >> "${file}"
-  source "${file}" || source ~/.zshrc
-else
-  echo -e "\n\n ${YELLOW}[i]${RESET} ${YELLOW}Skipping OpenVAS${RESET} (missing: '$0 ${BOLD}--openvas${RESET}')..." 1>&2
-fi
+#  file=~/.bash_aliases; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/bash.bash_aliases
+#  grep -q '^## openvas' "${file}" 2>/dev/null \
+#    || echo -e '## openvas\nalias openvas="openvas-stop; openvas-start; sleep 3s; xdg-open https://127.0.0.1:9392/ >/dev/null 2>&1"\n' >> "${file}"
+#  source "${file}" || source ~/.zshrc
+#else
+#  echo -e "\n\n ${YELLOW}[i]${RESET} ${YELLOW}Skipping OpenVAS${RESET} (missing: '$0 ${BOLD}--openvas${RESET}')..." 1>&2
+#fi
 
 
 ##### Install vFeed
@@ -2114,9 +2113,9 @@ chmod +x "${file}"
 
 
 ##### Install libreoffice
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}LibreOffice${RESET} ~ GUI office suite"
-apt -y -qq install libreoffice \
-  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
+#(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}LibreOffice${RESET} ~ GUI office suite"
+#apt -y -qq install libreoffice \
+#  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 
 
 ##### Install ipcalc & sipcalc
@@ -2247,27 +2246,27 @@ apt -y -qq install daemonfs \
 
 
 ##### Install filezilla
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}FileZilla${RESET} ~ GUI file transfer"
-apt -y -qq install filezilla \
-  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-#--- Configure filezilla
-export DISPLAY=:0.0
-timeout 5 filezilla >/dev/null 2>&1     # Start and kill. Files needed for first time run
-mkdir -p ~/.config/filezilla/
-file=~/.config/filezilla/filezilla.xml; [ -e "${file}" ] && cp -n $file{,.bkup}
-[ ! -e "${file}" ] && cat <<EOF> "${file}"
-<?xml version="1.0" encoding="UTF-8"?>
-<FileZilla3 version="3.15.0.2" platform="*nix">
-  <Settings>
-    <Setting name="Default editor">0</Setting>
-    <Setting name="Always use default editor">0</Setting>
-  </Settings>
-</FileZilla3>
-fi
-EOF
-sed -i 's#^.*"Default editor".*#\t<Setting name="Default editor">2/usr/bin/gedit</Setting>#' "${file}"
-[ -e /usr/bin/atom ] && sed -i 's#^.*"Default editor".*#\t<Setting name="Default editor">2/usr/bin/atom</Setting>#' "${file}"
-sed -i 's#^.*"Always use default editor".*#\t<Setting name="Always use default editor">1</Setting>#' "${file}"
+#(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}FileZilla${RESET} ~ GUI file transfer"
+#apt -y -qq install filezilla \
+#  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
+##--- Configure filezilla
+#export DISPLAY=:0.0
+#timeout 5 filezilla >/dev/null 2>&1     # Start and kill. Files needed for first time run
+#mkdir -p ~/.config/filezilla/
+#file=~/.config/filezilla/filezilla.xml; [ -e "${file}" ] && cp -n $file{,.bkup}
+#[ ! -e "${file}" ] && cat <<EOF> "${file}"
+#<?xml version="1.0" encoding="UTF-8"?>
+#<FileZilla3 version="3.15.0.2" platform="*nix">
+#  <Settings>
+#    <Setting name="Default editor">0</Setting>
+#    <Setting name="Always use default editor">0</Setting>
+#  </Settings>
+#</FileZilla3>
+#fi
+#EOF
+#sed -i 's#^.*"Default editor".*#\t<Setting name="Default editor">2/usr/bin/gedit</Setting>#' "${file}"
+#[ -e /usr/bin/atom ] && sed -i 's#^.*"Default editor".*#\t<Setting name="Default editor">2/usr/bin/atom</Setting>#' "${file}"
+#sed -i 's#^.*"Always use default editor".*#\t<Setting name="Always use default editor">1</Setting>#' "${file}"
 
 
 ##### Install ncftp
