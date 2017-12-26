@@ -253,37 +253,37 @@ fi
 
 
 ##### Check to see if Kali is in a VM. If so, install "Virtual Machine Addons/Tools" for a "better" virtual experiment
-if (dmidecode | grep -iq vmware); then
+#if (dmidecode | grep -iq vmware); then
   ##### Install virtual machines tools ~ http://docs.kali.org/general-use/install-vmware-tools-kali-guest
-  (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}VMware's (open) virtual machine tools${RESET}"
-  apt -y -qq install open-vm-tools-desktop fuse \
-  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-  apt -y -qq install make \
-   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2    # There's a nags afterwards
+#  (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}VMware's (open) virtual machine tools${RESET}"
+#  apt -y -qq install open-vm-tools-desktop fuse \
+#  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
+#  apt -y -qq install make \
+#   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2    # There's a nags afterwards
   ## Shared folders support for Open-VM-Tools (some odd bug)
-  file=/usr/local/sbin/mount-shared-folders; [ -e "${file}" ] && cp -n $file{,.bkup}
-  cat <<EOF > "${file}" \
-    || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
+#  file=/usr/local/sbin/mount-shared-folders; [ -e "${file}" ] && cp -n $file{,.bkup}
+#  cat <<EOF > "${file}" \
+#    || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
     
- #!/bin/bash
+# #!/bin/bash
 
-vmware-hgfsclient | while read folder; do
-  echo "[i] Mounting \${folder}   (/mnt/hgfs/\${folder})"
-  mkdir -p "/mnt/hgfs/\${folder}"
-  umount -f "/mnt/hgfs/\${folder}" 2>/dev/null
-  vmhgfs-fuse -o allow_other -o auto_unmount ".host:/\${folder}" "/mnt/hgfs/\${folder}"
-done
+#vmware-hgfsclient | while read folder; do
+#  echo "[i] Mounting \${folder}   (/mnt/hgfs/\${folder})"
+#  mkdir -p "/mnt/hgfs/\${folder}"
+#  umount -f "/mnt/hgfs/\${folder}" 2>/dev/null
+#  vmhgfs-fuse -o allow_other -o auto_unmount ".host:/\${folder}" "/mnt/hgfs/\${folder}"
+#done
 
-sleep 2s
-EOF
-  chmod +x "${file}"
-  ln -sf "${file}" /root/Desktop/mount-shared-folders.sh
-elif (dmidecode | grep -iq virtualbox); then
+#sleep 2s
+#EOF
+#  chmod +x "${file}"
+#  ln -sf "${file}" /root/Desktop/mount-shared-folders.sh
+#elif (dmidecode | grep -iq virtualbox); then
   ##### Installing VirtualBox Guest Additions.   Note: Need VirtualBox 4.2.xx+ for the host (http://docs.kali.org/general-use/kali-linux-virtual-box-guest)
-  (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}VirtualBox's guest additions${RESET}"
-  apt -y -qq install virtualbox-guest-x11 \
-    || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-fi
+#  (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}VirtualBox's guest additions${RESET}"
+#  apt -y -qq install virtualbox-guest-x11 \
+#    || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
+#fi
 
 
 ##### Check to see if there is a second Ethernet card (if so, set an static IP address)#
@@ -367,42 +367,42 @@ start_time=$(date +%s)
 
 
 ##### Update OS from network repositories
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) ${GREEN}Updating OS${RESET} from network repositories"
-echo -e " ${YELLOW}[i]${RESET}  ...this ${BOLD}may take a while${RESET} depending on your Internet connection & Kali version/age"
-for FILE in clean autoremove; do apt -y -qq "${FILE}"; done         # Clean up      clean remove autoremove autoclean
+#(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) ${GREEN}Updating OS${RESET} from network repositories"
+#echo -e " ${YELLOW}[i]${RESET}  ...this ${BOLD}may take a while${RESET} depending on your Internet connection & Kali version/age"
+#for FILE in clean autoremove; do apt -y -qq "${FILE}"; done         # Clean up      clean remove autoremove autoclean
 export DEBIAN_FRONTEND=noninteractive
-apt -qq update && APT_LISTCHANGES_FRONTEND=none apt -o Dpkg::Options::="--force-confnew" -y dist-upgrade --fix-missing 2>&1 \
-  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
+#apt -qq update && APT_LISTCHANGES_FRONTEND=none apt -o Dpkg::Options::="--force-confnew" -y dist-upgrade --fix-missing 2>&1 \
+#  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 #--- Cleaning up temp stuff
-for FILE in clean autoremove; do apt -y -qq "${FILE}"; done         # Clean up - clean remove autoremove autoclean
+#for FILE in clean autoremove; do apt -y -qq "${FILE}"; done         # Clean up - clean remove autoremove autoclean
 #--- Check kernel stuff
-_TMP=$(dpkg -l | grep linux-image- | grep -vc meta)
-if [[ "${_TMP}" -gt 1 ]]; then
-  echo -e "\n ${YELLOW}[i]${RESET} Detected ${YELLOW}multiple kernels${RESET}"
-  TMP=$(dpkg -l | grep linux-image | grep -v meta | sort -t '.' -k 2 -g | tail -n 1 | grep "$(uname -r)")
-  if [[ -z "${TMP}" ]]; then
-    echo -e '\n '${RED}'[!]'${RESET}' You are '${RED}'not using the latest kernel'${RESET} 1>&2
-    echo -e " ${YELLOW}[i]${RESET} You have it ${YELLOW}downloaded${RESET} & installed, just ${YELLOW}not USING IT${RESET}"
-    echo -e "\n ${YELLOW}[i]${RESET} You ${YELLOW}NEED to REBOOT${RESET}, before re-running this script"
-    exit 1
-    sleep 30s
-  else
-    echo -e " ${YELLOW}[i]${RESET} ${YELLOW}You're using the latest kernel${RESET} (Good to continue)"
-  fi
-fi
+#_TMP=$(dpkg -l | grep linux-image- | grep -vc meta)
+#if [[ "${_TMP}" -gt 1 ]]; then
+#  echo -e "\n ${YELLOW}[i]${RESET} Detected ${YELLOW}multiple kernels${RESET}"
+#  TMP=$(dpkg -l | grep linux-image | grep -v meta | sort -t '.' -k 2 -g | tail -n 1 | grep "$(uname -r)")
+#  if [[ -z "${TMP}" ]]; then
+#    echo -e '\n '${RED}'[!]'${RESET}' You are '${RED}'not using the latest kernel'${RESET} 1>&2
+#    echo -e " ${YELLOW}[i]${RESET} You have it ${YELLOW}downloaded${RESET} & installed, just ${YELLOW}not USING IT${RESET}"
+#    echo -e "\n ${YELLOW}[i]${RESET} You ${YELLOW}NEED to REBOOT${RESET}, before re-running this script"
+#    exit 1
+#    sleep 30s
+#  else
+#    echo -e " ${YELLOW}[i]${RESET} ${YELLOW}You're using the latest kernel${RESET} (Good to continue)"
+#  fi
+#fi
 
 
 ##### Install kernel headers
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}kernel headers${RESET}"
-apt -y -qq install make gcc "linux-headers-$(uname -r)" \
-  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-if [[ $? -ne 0 ]]; then
-  echo -e ' '${RED}'[!]'${RESET}" There was an ${RED}issue installing kernel headers${RESET}" 1>&2
-  echo -e " ${YELLOW}[i]${RESET} Are you ${YELLOW}USING${RESET} the ${YELLOW}latest kernel${RESET}?"
-  echo -e " ${YELLOW}[i]${RESET} ${YELLOW}Reboot${RESET} your machine"
-  exit 1
-  sleep 30s
-fi
+#(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}kernel headers${RESET}"
+#apt -y -qq install make gcc "linux-headers-$(uname -r)" \
+#  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
+#if [[ $? -ne 0 ]]; then
+#  echo -e ' '${RED}'[!]'${RESET}" There was an ${RED}issue installing kernel headers${RESET}" 1>&2
+#  echo -e " ${YELLOW}[i]${RESET} Are you ${YELLOW}USING${RESET} the ${YELLOW}latest kernel${RESET}?"
+#  echo -e " ${YELLOW}[i]${RESET} ${YELLOW}Reboot${RESET} your machine"
+#  exit 1
+#  sleep 30s
+#fi
 
 
 ##### Install "kali full" meta packages (default tool selection)
