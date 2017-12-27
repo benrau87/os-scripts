@@ -103,7 +103,7 @@ def write_to_file(ip_address, enum_type, data):
 
 def dirb(ip_address, port, url_start):
     print bcolors.HEADER + "INFO: Starting dirb scan for " + ip_address + bcolors.ENDC
-    DIRBSCAN = "gobuster -u %s://%s:%s -w /usr/share/wordlists/dirb/common.txt -t 100 | tee /root/Dropbox/Engagements/%s/dirb-%s.txt" % (url_start, ip_address, port, ip_address, ip_address)
+    DIRBSCAN = "gobuster -u %s://%s:%s -e -w /usr/share/wordlists/dirb/common.txt -t 100 | tee /root/Dropbox/Engagements/%s/dirb-%s.txt" % (url_start, ip_address, port, ip_address, ip_address)
     #DIRBSCAN = "dirb %s://%s:%s -S -o /root/Dropbox/Engagements/%s/dirb-%s.txt" % (url_start, ip_address, port, ip_address, ip_address)
     print bcolors.HEADER + DIRBSCAN + bcolors.ENDC
     results_dirb = subprocess.check_output(DIRBSCAN, shell=True)
@@ -157,7 +157,7 @@ def httpsEnum(ip_address, port):
     nikto_process.start()
     wig_process = multiprocessing.Process(target=wig, args=(ip_address,port,"https"))
     wig_process.start()
-    SSLSCAN = "sslscan %s:%s >> /root/Dropbox/Engagements/%s/ssl_scan_%s" % (ip_address, port, ip_address, ip_address)
+    SSLSCAN = "sslscan %s:%s | tee /root/Dropbox/Engagements/%s/ssl_scan_%s" % (ip_address, port, ip_address, ip_address)
     print bcolors.HEADER + SSLSCAN + bcolors.ENDC
     ssl_results = subprocess.check_output(SSLSCAN, shell=True)
     print bcolors.OKGREEN + "INFO: CHECK FILE - Finished with SSLSCAN for " + ip_address + bcolors.ENDC
