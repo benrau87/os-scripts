@@ -42,7 +42,6 @@ nmap INSERTIPADDRESS -p- -A -T4 -sC
 nmap --script=vuln INSERTIPADDRESS
 ```
 
-INSERTVULNSCAN
 
 ### Port 21 - FTP
 
@@ -65,7 +64,10 @@ nmap --script=ftp-anon,ftp-libopie,ftp-proftpd-backdoor,ftp-vsftpd-backdoor,ftp-
 
 INSERTSSHCONNECT
 
+INSERTSSHBRUTE
+
 ```
+hydra -I -t 5 -l username -P password ssh://INSERTIPADDRESS
 nc INSERTIPADDRESS 22
 ```
 
@@ -272,12 +274,20 @@ View Source!
 
 Step 2: 
 Robots.txt!
+```
+wig-git -a -q -t 5 INSERTIPADDRESS
+ --proxy PROXY 
 
+INSERTROBOTS
+```
 Step 3: 
 Browse around and look for disclosed PII on site
 
 *Place anything here
 ```
+
+
+
 ```
 # CMS checker 
 wig-git http://INSERTIPADDRESS -a -m
