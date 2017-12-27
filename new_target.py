@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import subprocess
+import re
 import multiprocessing
 from multiprocessing import Process, Queue
 import os
@@ -9,6 +10,7 @@ import atexit
 import sys
 import socket
 
+#robots.txt gobuster
 #myip = subprocess.check_output("ifconfig | grep tap0 -A1 | cut -d" " -f 10")
 myip = "192.168.41.31"
 start = time.time()
@@ -99,38 +101,61 @@ def write_to_file(ip_address, enum_type, data):
             subprocess.check_output("replace INSERTNFSSCAN \"" + data + "\"  -- " + path, shell=True)
         if enum_type == "ssl-scan":
             subprocess.check_output("replace INSERTSSLSCAN \"" + data + "\"  -- " + path, shell=True)
+        if enum_type == "parsero":
+            subprocess.check_output("replace INSERTROBOTS \"" + data + "\"  -- " + path, shell=True)
+        if enum_type == "sshscan":
+            subprocess.check_output("replace INSERTSSHBRUTE \"" + data + "\"  -- " + path, shell=True)
     return
 
 def dirb(ip_address, port, url_start):
     print bcolors.HEADER + "INFO: Starting dirb scan for " + ip_address + bcolors.ENDC
-    DIRBSCAN = "gobuster -u %s://%s:%s -e -w /usr/share/wordlists/dirb/common.txt -t 100 | tee /root/Dropbox/Engagements/%s/%s-dirb-%s.txt" % (url_start, ip_address, port, ip_address,  url_start, ip_address)
+    DIRBSCAN = "gobuster -u %s://%s:%s -e -w /usr/share/wordlists/dirb/common.txt -t 20 | tee /root/Dropbox/Engagements/%s/webapp_scans/%s-dirb-%s.txt" % (url_start, ip_address, port, ip_address,  url_start, ip_address)
     #DIRBSCAN = "dirb %s://%s:%s -S -o /root/Dropbox/Engagements/%s/dirb-%s.txt" % (url_start, ip_address, port, ip_address, ip_address)
     print bcolors.HEADER + DIRBSCAN + bcolors.ENDC
     results_dirb = subprocess.check_output(DIRBSCAN, shell=True)
-    print bcolors.OKGREEN + "INFO: RESULT BELOW - Finished with dirb scan for " + ip_address + bcolors.ENDC
+    print bcolors.OKGREEN + "INFO: RESULT BELOW - Finished with DIRB-scan for " + ip_address + bcolors.ENDC
     print results_dirb
     write_to_file(ip_address, "dirb", results_dirb)
     return
 
 def wig(ip_address, port, url_start):
     print bcolors.HEADER + "INFO: Starting wig scan for " + ip_address + bcolors.ENDC
-    WIGSCAN = "wig-git %s://%s:%s -a -m  -w /root/Dropbox/Engagements/%s/%s-wig-%s.txt | sed -r 's/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g'" % (url_start, ip_address, port, ip_address, url_start, ip_address)
+    WIGSCAN = "wig-git %s://%s:%s -a -q  -w /root/Dropbox/Engagements/%s/webapp_scans/%s-wig-%s.txt | sed -r 's/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g'" % (url_start, ip_address, port, ip_address, url_start, ip_address)
     print bcolors.HEADER + WIGSCAN + bcolors.ENDC
     results_wig = subprocess.check_output(WIGSCAN, shell=True)
-    print bcolors.OKGREEN + "INFO: RESULT BELOW - Finished with wig scan for " + ip_address + bcolors.ENDC
+    print bcolors.OKGREEN + "INFO: RESULT BELOW - Finished with WIG-scan for " + ip_address + bcolors.ENDC
     print results_wig
     write_to_file(ip_address, "wig", results_wig)
     return
 
 def nikto(ip_address, port, url_start):
     print bcolors.HEADER + "INFO: Starting nikto scan for " + ip_address + bcolors.ENDC
-    NIKTOSCAN = "nikto -h %s://%s:%s -o /root/Dropbox/Engagements/%s/nikto-%s-%s:%s.txt" % (url_start, ip_address, port, ip_address, url_start, ip_address, port)
+    NIKTOSCAN = "nikto -maxtime 5m -h %s://%s:%s -o /root/Dropbox/Engagements/%s/webapp_scans/nikto-%s-%s:%s.txt" % (url_start, ip_address, port, ip_address, url_start, ip_address, port)
     print bcolors.HEADER + NIKTOSCAN + bcolors.ENDC
     results_nikto = subprocess.check_output(NIKTOSCAN, shell=True)
     print bcolors.OKGREEN + "INFO: RESULT BELOW - Finished with NIKTO-scan for " + ip_address + bcolors.ENDC
     print results_nikto
     write_to_file(ip_address, "nikto", results_nikto)
     return
+
+def parsero(ip_address, port, url_start):
+    print bcolors.HEADER + "INFO: Starting parsero scan for " + ip_address + bcolors.ENDC
+    ROBOTSSCAN = "parsero-git -u %s://%s:%s | grep OK | sed -r 's/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g' | tee /root/Dropbox/Engagements/%s/webapp_scans/robots-%s-%s:%s.txt" % (url_start, ip_address, port, ip_address, url_start, ip_address, port)
+    print bcolors.HEADER + ROBOTSSCAN + bcolors.ENDC
+    results_parsero = subprocess.check_output(ROBOTSSCAN, shell=True)
+    print bcolors.OKGREEN + "INFO: RESULT BELOW - Finished with PARSERO-scan for " + ip_address + bcolors.ENDC
+    print results_parsero
+    write_to_file(ip_address, "parsero", results_parsero)
+    return
+
+def ssl(ip_address, port, url_start):
+    print bcolors.HEADER + "INFO: Starting ssl scan for " + ip_address + bcolors.ENDC
+    SSLSCAN = "sslscan %s:%s | tee /root/Dropbox/Engagements/%s/webapp_scans/ssl_scan_%s" % (ip_address, port, ip_address, ip_address)
+    print bcolors.HEADER + SSLSCAN + bcolors.ENDC
+    results_ssl = subprocess.check_output(SSLSCAN, shell=True)
+    print bcolors.OKGREEN + "INFO: CHECK FILE - Finished with SSL-scan for " + ip_address + bcolors.ENDC
+    print results_ssl
+    write_to_file(ip_address, "ssl-scan", results_ssl)
 
 def httpEnum(ip_address, port):
     print bcolors.HEADER + "INFO: Detected http on " + ip_address + ":" + port + bcolors.ENDC
@@ -141,11 +166,8 @@ def httpEnum(ip_address, port):
     nikto_process.start()
     wig_process = multiprocessing.Process(target=wig, args=(ip_address,port,"http"))
     wig_process.start()
-    #CURLSCAN = "curl -I http://%s" % (ip_address)
-    #print bcolors.HEADER + CURLSCAN + bcolors.ENDC
-    #curl_results = subprocess.check_output(CURLSCAN, shell=True)
-    #write_to_file(ip_address, "curl", curl_results)
-    #print curl_results
+    parsero_process = multiprocessing.Process(target=parsero, args=(ip_address,port,"http"))
+    parsero_process.start()
     return
 
 def httpsEnum(ip_address, port):
@@ -157,22 +179,16 @@ def httpsEnum(ip_address, port):
     nikto_process.start()
     wig_process = multiprocessing.Process(target=wig, args=(ip_address,port,"https"))
     wig_process.start()
-    SSLSCAN = "sslscan %s:%s | tee /root/Dropbox/Engagements/%s/ssl_scan_%s" % (ip_address, port, ip_address, ip_address)
-    print bcolors.HEADER + SSLSCAN + bcolors.ENDC
-    ssl_results = subprocess.check_output(SSLSCAN, shell=True)
-    print bcolors.OKGREEN + "INFO: CHECK FILE - Finished with SSLSCAN for " + ip_address + bcolors.ENDC
-    write_to_file(ip_address, "ssl-scan", ssl_results)
-    #HTTPSCANS = "nmap -sV -Pn -vv -p %s --script=http-vhosts,http-userdir-enum,http-apache-negotiation,http-backup-finder,http-config-backup,http-default-accounts,http-methods,http-method-tamper,http-passwd,http-robots.txt,http-devframework,http-enum,http-frontpage-login,http-git,http-iis-webdav-vuln,http-php-version,http-robots.txt,http-shellshock,http-vuln-cve2015-1635 -oN /root/Dropbox/Engagements/%s/%s_http.nmap %s" % (port, ip_address, ip_address, ip_address)
-    #print bcolors.HEADER + HTTPSCANS + bcolors.ENDC
-    #https_results = subprocess.check_output(HTTPSCANS, shell=True)
-    #print bcolors.OKGREEN + "INFO: RESULT BELOW - Finished with HTTPS-scan for " + ip_address + bcolors.ENDC
-    #print https_results
+    parsero_process = multiprocessing.Process(target=parsero, args=(ip_address,port,"https"))
+    parsero_process.start()
+    ssl_process = multiprocessing.Process(target=ssl, args=(ip_address,port,"https"))
+    ssl_process.start()
     return
 
 def mssqlEnum(ip_address, port):
     print bcolors.HEADER + "INFO: Detected MS-SQL on " + ip_address + ":" + port + bcolors.ENDC
     print bcolors.HEADER + "INFO: Performing nmap mssql script scan for " + ip_address + ":" + port + bcolors.ENDC
-    MSSQLSCAN = "nmap -sV -Pn -p %s --script=ms-sql-info,ms-sql-config,ms-sql-dump-hashes --script-args=mssql.instance-port=1433,smsql.username-sa,mssql.password-sa -oN /root/Dropbox/Engagements/%s/mssql_%s.nmap %s" % (port, ip_address, ip_address)
+    MSSQLSCAN = "nmap -sV -Pn -p %s --script=ms-sql-info,ms-sql-config,ms-sql-dump-hashes --script-args=mssql.instance-port=1433,smsql.username-sa,mssql.password-sa -oN /root/Dropbox/Engagements/%s/service_scans/mssql_%s.nmap %s" % (port, ip_address, ip_address)
     print bcolors.HEADER + MSSQLSCAN + bcolors.ENDC
     mssql_results = subprocess.check_output(MSSQLSCAN, shell=True)
     print bcolors.OKGREEN + "INFO: RESULT BELOW - Finished with MSSQL-scan for " + ip_address + bcolors.ENDC
@@ -182,7 +198,7 @@ def mssqlEnum(ip_address, port):
 def smtpEnum(ip_address, port):
     print bcolors.HEADER + "INFO: Detected smtp on " + ip_address + ":" + port  + bcolors.ENDC
     connect_to_port(ip_address, port, "smtp")
-    SMTPSCAN = "nmap -sV -Pn -p %s --script=smtp-commands,smtp-enum-users,smtp-vuln-cve2010-4344,smtp-vuln-cve2011-1720,smtp-vuln-cve2011-1764 %s -oN /root/Dropbox/Engagements/%s/smtp_%s.nmap" % (port, ip_address, ip_address, ip_address)
+    SMTPSCAN = "nmap -sV -Pn -p %s --script=smtp-commands,smtp-enum-users,smtp-vuln-cve2010-4344,smtp-vuln-cve2011-1720,smtp-vuln-cve2011-1764 %s -oN /root/Dropbox/Engagements/%s/service_scans/smtp_%s.nmap" % (port, ip_address, ip_address, ip_address)
     print bcolors.HEADER + SMTPSCAN + bcolors.ENDC
     smtp_results = subprocess.check_output(SMTPSCAN, shell=True)
     print bcolors.OKGREEN + "INFO: RESULT BELOW - Finished with SMTP-scan for " + ip_address + bcolors.ENDC
@@ -193,27 +209,27 @@ def smtpEnum(ip_address, port):
 def smbEnum(ip_address, port):
     print "INFO: Detected SMB on " + ip_address + ":" + port
     print bcolors.HEADER + "INFO: Performing SMB based scans for " + ip_address + ":" + port + bcolors.ENDC
-    SMBMAP = "smbmap -H %s -R | tee /root/Dropbox/Engagements/%s/smbmap_%s" % (ip_address, ip_address, ip_address)
+    SMBMAP = "smbmap -H %s -R | tee /root/Dropbox/Engagements/%s/service_scans/smbmap_%s" % (ip_address, ip_address, ip_address)
     smbmap_results = subprocess.check_output(SMBMAP, shell=True)
-    print bcolors.OKGREEN + "INFO: CHECK FILE - Finished with SMBMap-scans for " + ip_address + bcolors.ENDC
+    print bcolors.OKGREEN + "INFO: CHECK FILE - Finished with SMBMap-scan for " + ip_address + bcolors.ENDC
     print smbmap_results
     write_to_file(ip_address, "smbmap", smbmap_results)
     return
 
 def rpcEnum(ip_address, port): 
     print bcolors.HEADER + "INFO: Detected RPC on " + ip_address + ":" + port  + bcolors.ENDC
-    RPCMAP = "impacket-rpcdump %s  | tee /root/Dropbox/Engagements/%s/rpcmap_%s" % (ip_address, ip_address, ip_address)
+    RPCMAP = "impacket-rpcdump %s  | tee /root/Dropbox/Engagements/%s/service_scans/rpcmap_%s" % (ip_address, ip_address, ip_address)
     rpcmap_results = subprocess.check_output(RPCMAP, shell=True)
-    print bcolors.OKGREEN + "INFO: CHECK FILE - Finished with RPC-scans for " + ip_address + bcolors.ENDC
+    print bcolors.OKGREEN + "INFO: CHECK FILE - Finished with RPC-scan for " + ip_address + bcolors.ENDC
     print rpcmap_results
     write_to_file(ip_address, "rpcmap", rpcmap_results)
     return
 
 def samrEnum(ip_address, port):
     print bcolors.HEADER + "INFO: Detected SAMR on " + ip_address + ":" + port  + bcolors.ENDC
-    SAMRDUMP = "impacket-samrdump %s | tee /root/Dropbox/Engagements/%s/samrdump_%s" % (ip_address, ip_address, ip_address)
+    SAMRDUMP = "impacket-samrdump %s | tee /root/Dropbox/Engagements/%s/service_scans/samrdump_%s" % (ip_address, ip_address, ip_address)
     samrdump_results = subprocess.check_output(SAMRDUMP, shell=True)
-    print bcolors.OKGREEN + "INFO: CHECK FILE - Finished with samrdump-scans for " + ip_address + bcolors.ENDC
+    print bcolors.OKGREEN + "INFO: CHECK FILE - Finished with SAMR-scan for " + ip_address + bcolors.ENDC
     print samrdump_results
     write_to_file(ip_address, "samrdump", samrdump_results)
     return
@@ -221,7 +237,7 @@ def samrEnum(ip_address, port):
 def ftpEnum(ip_address, port):
     print bcolors.HEADER + "INFO: Detected ftp on " + ip_address + ":" + port  + bcolors.ENDC
     connect_to_port(ip_address, port, "ftp")
-    FTPSCAN = "nmap -sV -Pn -vv -p %s --script=ftp-anon,ftp-bounce,ftp-libopie,ftp-proftpd-backdoor,ftp-vsftpd-backdoor,ftp-vuln-cve2010-4221 -oN '/root/Dropbox/Engagements/%s/ftp_%s.nmap' %s" % (port, ip_address, ip_address, ip_address)
+    FTPSCAN = "nmap -sV -Pn -vv -p %s --script=ftp-anon,ftp-bounce,ftp-libopie,ftp-proftpd-backdoor,ftp-vsftpd-backdoor,ftp-vuln-cve2010-4221 -oN '/root/Dropbox/Engagements/%s/service_scans/ftp_%s.nmap' %s" % (port, ip_address, ip_address, ip_address)
     print bcolors.HEADER + FTPSCAN + bcolors.ENDC
     results_ftp = subprocess.check_output(FTPSCAN, shell=True)
     print bcolors.OKGREEN + "INFO: RESULT BELOW - Finished with FTP-Nmap-scan for " + ip_address + bcolors.ENDC
@@ -230,27 +246,37 @@ def ftpEnum(ip_address, port):
 
 def udpScan(ip_address):
     print bcolors.HEADER + "INFO: Detected UDP on " + ip_address + bcolors.ENDC
-    UDPSCAN = "nmap -vv -Pn -A -sC -sU -T 4 --top-ports 200 -oN '/root/Dropbox/Engagements/%s/udp_%s.nmap' %s"  % (ip_address, ip_address, ip_address)
+    UDPSCAN = "nmap -vv -Pn -A -sC -sU -T 4 --top-ports 200 -oN '/root/Dropbox/Engagements/%s/port_scans/udp_%s.nmap' %s"  % (ip_address, ip_address, ip_address)
     print bcolors.HEADER + UDPSCAN + bcolors.ENDC
     udpscan_results = subprocess.check_output(UDPSCAN, shell=True)
     print bcolors.OKGREEN + "INFO: RESULT BELOW - Finished with UDP-Nmap scan for " + ip_address + bcolors.ENDC
     print udpscan_results
-    UNICORNSCAN = "unicornscan -mU -v -I %s > /root/Dropbox/Engagements/%s/unicorn_udp_%s.txt" % (ip_address, ip_address, ip_address)
+    UNICORNSCAN = "unicornscan -mU -v -I %s > /root/Dropbox/Engagements/%s/port_scans/unicorn_udp_%s.txt" % (ip_address, ip_address, ip_address)
     unicornscan_results = subprocess.check_output(UNICORNSCAN, shell=True)
-    print bcolors.OKGREEN + "INFO: CHECK FILE - Finished with UNICORNSCAN for " + ip_address + bcolors.ENDC
+    print bcolors.OKGREEN + "INFO: CHECK FILE - Finished with UNICORN-scan for " + ip_address + bcolors.ENDC
 
 def nfsEnum(ip_address, port):
     print bcolors.HEADER + "INFO: Detected NFS on " + ip_address + bcolors.ENDC
-    SHOWMOUNT = "showmount -e %s | tee '/root/Dropbox/Engagements/%s/nfs_%s.nmap'"  % (ip_address, ip_address, ip_address)
+    SHOWMOUNT = "showmount -e %s | tee '/root/Dropbox/Engagements/%s/service_scans/nfs_%s.nmap'"  % (ip_address, ip_address, ip_address)
     print bcolors.HEADER + SHOWMOUNT + bcolors.ENDC
     nfsscan_results = subprocess.check_output(SHOWMOUNT, shell=True)
-    print bcolors.OKGREEN + "INFO: RESULT BELOW - Finished with NFS scan for " + ip_address + bcolors.ENDC
+    print bcolors.OKGREEN + "INFO: RESULT BELOW - Finished with NFS-scan for " + ip_address + bcolors.ENDC
     print nfsscan_results
     write_to_file(ip_address, "nfsscan", nfsscan_results)
 
 def sshScan(ip_address, port):
     print bcolors.HEADER + "INFO: Detected SSH on " + ip_address + ":" + port  + bcolors.ENDC
     connect_to_port(ip_address, port, "ssh")
+    ssl_process = multiprocessing.Process(target=sshBrute, args=(ip_address,port))
+    ssl_process.start()
+
+def sshBrute(ip_address, port):    
+    print bcolors.HEADER + "INFO: SSH Bruteforce on " + ip_address + ":" + port  + bcolors.ENDC
+    SSHSCAN = "hydra -I -t 4 -L '/root/Dropbox/Wordlists/quick_hit.txt' -P '/root/Dropbox/Wordlists/quick_hit.txt' ssh://%s -s %s | grep target" % (ip_address, port)
+    results_ssh = subprocess.check_output(SSHSCAN, shell=True)
+    print bcolors.OKGREEN + "INFO: RESULT BELOW - Finished with SSH-Bruteforce check for " + ip_address + bcolors.ENDC
+    print results_ssh
+    write_to_file(ip_address, "sshscan", results_ssh)
 
 def pop3Scan(ip_address, port):
     print bcolors.HEADER + "INFO: Detected POP3 on " + ip_address + ":" + port  + bcolors.ENDC
@@ -259,17 +285,25 @@ def pop3Scan(ip_address, port):
 def vulnEnum(ip_address):
     print bcolors.HEADER + "INFO: Detected vulns on " + ip_address  + bcolors.ENDC
     print bcolors.HEADER + "INFO: Performing Vulnerability based scans for " + ip_address + bcolors.ENDC
-    VULN = "nmap --script=vuln %s -oN /root/Dropbox/Engagements/%s/vuln_%s.nmap" % (ip_address, ip_address, ip_address)
+    VULN = "nmap --script=vuln --script-timeout=120 %s -oN /root/Dropbox/Engagements/%s/port_scans/vuln_%s.nmap" % (ip_address, ip_address, ip_address)
     vuln_results = subprocess.check_output(VULN, shell=True)
-    print bcolors.OKGREEN + "INFO: CHECK FILE - Finished with Vuln-scans for " + ip_address + bcolors.ENDC
+    print bcolors.OKGREEN + "INFO: CHECK FILE - Finished with VULN-scan for " + ip_address + bcolors.ENDC
     print vuln_results
     write_to_file(ip_address, "vulnscan", vuln_results)
     return
 
 def nmapScan(ip_address):
     ip_address = ip_address.strip()
+
+    print bcolors.OKGREEN + "INFO: Running general TCP Unicorn scan for " + ip_address + bcolors.ENDC
+    PORTSCAN = "unicornscan %s "  % (ip_address)
+    print bcolors.HEADER + PORTSCAN + bcolors.ENDC
+    open_ports = subprocess.check_output(PORTSCAN, shell=True)
+    print open_ports
+    ports_dirty= ",".join(re.findall('\[(.*?)\]', open_ports))
+    port_list = ports_dirty.replace(' ', '')
     print bcolors.OKGREEN + "INFO: Running general TCP/UDP nmap scans for " + ip_address + bcolors.ENDC
-    TCPSCAN = "nmap -sV -O %s -oN '/root/Dropbox/Engagements/%s/%s.nmap'"  % (ip_address, ip_address, ip_address)
+    TCPSCAN = "nmap -sV -O -p%s %s -oN '/root/Dropbox/Engagements/%s/%s.nmap'"  % (port_list, ip_address, ip_address, ip_address)
     print bcolors.HEADER + TCPSCAN + bcolors.ENDC
     results = subprocess.check_output(TCPSCAN, shell=True)
     print bcolors.OKGREEN + "INFO: RESULT BELOW - Finished with BASIC Nmap-scan for " + ip_address + bcolors.ENDC
@@ -339,6 +373,9 @@ def nmapScan(ip_address):
             for port in ports:
                 port = port.split("/")[0]
                 multProc(sshScan, ip_address, port)
+   
+#RDP 
+
       #  elif:
        #     multProc(vulnEnum, ip_address, 80)
         #elif "snmp" in serv:
@@ -388,6 +425,9 @@ if __name__=='__main__':
             subprocess.check_output("mkdir /root/Dropbox/Engagements/" + scanip, shell=True)
             subprocess.check_output("mkdir /root/Dropbox/Engagements/" + scanip + "/exploits", shell=True)
             subprocess.check_output("mkdir /root/Dropbox/Engagements/" + scanip + "/privesc", shell=True)
+            subprocess.check_output("mkdir /root/Dropbox/Engagements/" + scanip + "/service_scans", shell=True)
+            subprocess.check_output("mkdir /root/Dropbox/Engagements/" + scanip + "/webapp_scans", shell=True)
+            subprocess.check_output("mkdir /root/Dropbox/Engagements/" + scanip + "/port_scans", shell=True)
             print bcolors.OKGREEN + "INFO: Folder created here: " + "/root/Dropbox/Engagements/" + scanip + bcolors.ENDC
             subprocess.check_output("cp /root/Dropbox/Scripts/oscp/windows-template.md /root/Dropbox/Engagements/" + scanip + "/mapping-windows.md", shell=True)
             subprocess.check_output("cp /root/Dropbox/Scripts/oscp/linux-template.md /root/Dropbox/Engagements/" + scanip + "/mapping-linux.md", shell=True)
