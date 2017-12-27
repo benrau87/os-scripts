@@ -272,6 +272,9 @@ ncrack -vv --user Administrator -P /usr/share/wordlists/rockyou.txt rdp://INSERT
 
 INSERTWIGSCAN
 
+```
+wig-git http://INSERTIPADDRESS/path
+```
 #### Nikto scan
 
 INSERTNIKTOSCAN
