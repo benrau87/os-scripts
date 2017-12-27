@@ -2045,6 +2045,24 @@ apt -y -qq install gitg \
 apt -y -qq install sparta \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 
+##### Install parsero
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}parsero${RESET} ~ Robots.txt searcher"
+git clone -q -b master https://github.com/behindthefirewalls/Parsero /opt/parsero-git/ \
+  || echo -e ' '${RED}'[!] Issue when git cloning'${RESET} 1>&2
+pushd /opt/parsero-git/ >/dev/null
+git pull -q
+popd >/dev/null
+#--- Add to path
+mkdir -p /usr/local/bin/
+file=/usr/local/bin/parsero-git
+cat <<EOF > "${file}" \
+  || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
+#!/bin/bash
+
+cd /opt/parsero-git/ && python3 parsero.py "\$@"
+EOF
+chmod +x "${file}"
+
 
 ##### Install wireshark
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Wireshark${RESET} ~ GUI network protocol analyzer"
