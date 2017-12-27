@@ -252,6 +252,10 @@ mysql --host=INSERTIPADDRESS -u root -p
 
 INSERTWIGSCAN
 
+```
+wig-git http://INSERTIPADDRESS/path
+```
+
 #### Nikto scan
 
 INSERTNIKTOSCAN
