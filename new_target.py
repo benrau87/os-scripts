@@ -103,7 +103,7 @@ def write_to_file(ip_address, enum_type, data):
 
 def dirb(ip_address, port, url_start):
     print bcolors.HEADER + "INFO: Starting dirb scan for " + ip_address + bcolors.ENDC
-    DIRBSCAN = "gobuster -u %s://%s:%s -w /usr/share/wordlists/dirb/common.txt -t 100 > /root/Dropbox/Engagements/%s/dirb-%s.txt" % (url_start, ip_address, port, ip_address, ip_address)
+    DIRBSCAN = "gobuster -u %s://%s:%s -w /usr/share/wordlists/dirb/common.txt -t 100 | tee /root/Dropbox/Engagements/%s/dirb-%s.txt" % (url_start, ip_address, port, ip_address, ip_address)
     #DIRBSCAN = "dirb %s://%s:%s -S -o /root/Dropbox/Engagements/%s/dirb-%s.txt" % (url_start, ip_address, port, ip_address, ip_address)
     print bcolors.HEADER + DIRBSCAN + bcolors.ENDC
     results_dirb = subprocess.check_output(DIRBSCAN, shell=True)
@@ -193,7 +193,7 @@ def smtpEnum(ip_address, port):
 def smbEnum(ip_address, port):
     print "INFO: Detected SMB on " + ip_address + ":" + port
     print bcolors.HEADER + "INFO: Performing SMB based scans for " + ip_address + ":" + port + bcolors.ENDC
-    SMBMAP = "smbmap -H %s -R > /root/Dropbox/Engagements/%s/smbmap_%s" % (ip_address, ip_address, ip_address)
+    SMBMAP = "smbmap -H %s -R | tee /root/Dropbox/Engagements/%s/smbmap_%s" % (ip_address, ip_address, ip_address)
     smbmap_results = subprocess.check_output(SMBMAP, shell=True)
     print bcolors.OKGREEN + "INFO: CHECK FILE - Finished with SMBMap-scans for " + ip_address + bcolors.ENDC
     print smbmap_results
@@ -202,7 +202,7 @@ def smbEnum(ip_address, port):
 
 def rpcEnum(ip_address, port): 
     print bcolors.HEADER + "INFO: Detected RPC on " + ip_address + ":" + port  + bcolors.ENDC
-    RPCMAP = "impacket-rpcdump %s  > /root/Dropbox/Engagements/%s/rpcmap_%s" % (ip_address, ip_address, ip_address)
+    RPCMAP = "impacket-rpcdump %s  | tee /root/Dropbox/Engagements/%s/rpcmap_%s" % (ip_address, ip_address, ip_address)
     rpcmap_results = subprocess.check_output(RPCMAP, shell=True)
     print bcolors.OKGREEN + "INFO: CHECK FILE - Finished with RPC-scans for " + ip_address + bcolors.ENDC
     print rpcmap_results
@@ -211,7 +211,7 @@ def rpcEnum(ip_address, port):
 
 def samrEnum(ip_address, port):
     print bcolors.HEADER + "INFO: Detected SAMR on " + ip_address + ":" + port  + bcolors.ENDC
-    SAMRDUMP = "impacket-samrdump %s > /root/Dropbox/Engagements/%s/samrdump_%s" % (ip_address, ip_address, ip_address)
+    SAMRDUMP = "impacket-samrdump %s | tee /root/Dropbox/Engagements/%s/samrdump_%s" % (ip_address, ip_address, ip_address)
     samrdump_results = subprocess.check_output(SAMRDUMP, shell=True)
     print bcolors.OKGREEN + "INFO: CHECK FILE - Finished with samrdump-scans for " + ip_address + bcolors.ENDC
     print samrdump_results
@@ -241,7 +241,7 @@ def udpScan(ip_address):
 
 def nfsEnum(ip_address, port):
     print bcolors.HEADER + "INFO: Detected NFS on " + ip_address + bcolors.ENDC
-    SHOWMOUNT = "showmount -e %s > '/root/Dropbox/Engagements/%s/nfs_%s.nmap'"  % (ip_address, ip_address, ip_address)
+    SHOWMOUNT = "showmount -e %s | tee '/root/Dropbox/Engagements/%s/nfs_%s.nmap'"  % (ip_address, ip_address, ip_address)
     print bcolors.HEADER + SHOWMOUNT + bcolors.ENDC
     nfsscan_results = subprocess.check_output(SHOWMOUNT, shell=True)
     print bcolors.OKGREEN + "INFO: RESULT BELOW - Finished with NFS scan for " + ip_address + bcolors.ENDC
