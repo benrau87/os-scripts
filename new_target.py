@@ -103,7 +103,8 @@ def write_to_file(ip_address, enum_type, data):
 
 def dirb(ip_address, port, url_start):
     print bcolors.HEADER + "INFO: Starting dirb scan for " + ip_address + bcolors.ENDC
-    DIRBSCAN = "dirb %s://%s:%s -S -o /root/Dropbox/Engagements/%s/dirb-%s.txt" % (url_start, ip_address, port, ip_address, ip_address)
+    DIRBSCAN = "gobuster -u %s://%s:%s -w /usr/share/wordlists/dirb/common.txt -t 100 > /root/Dropbox/Engagements/%s/dirb-%s.txt" % (url_start, ip_address, port, ip_address, ip_address)
+    #DIRBSCAN = "dirb %s://%s:%s -S -o /root/Dropbox/Engagements/%s/dirb-%s.txt" % (url_start, ip_address, port, ip_address, ip_address)
     print bcolors.HEADER + DIRBSCAN + bcolors.ENDC
     results_dirb = subprocess.check_output(DIRBSCAN, shell=True)
     print bcolors.OKGREEN + "INFO: RESULT BELOW - Finished with dirb scan for " + ip_address + bcolors.ENDC
@@ -140,11 +141,11 @@ def httpEnum(ip_address, port):
     nikto_process.start()
     wig_process = multiprocessing.Process(target=wig, args=(ip_address,port,"http"))
     wig_process.start()
-    CURLSCAN = "curl -I http://%s" % (ip_address)
-    print bcolors.HEADER + CURLSCAN + bcolors.ENDC
-    curl_results = subprocess.check_output(CURLSCAN, shell=True)
-    write_to_file(ip_address, "curl", curl_results)
-    print curl_results
+    #CURLSCAN = "curl -I http://%s" % (ip_address)
+    #print bcolors.HEADER + CURLSCAN + bcolors.ENDC
+    #curl_results = subprocess.check_output(CURLSCAN, shell=True)
+    #write_to_file(ip_address, "curl", curl_results)
+    #print curl_results
     return
 
 def httpsEnum(ip_address, port):
@@ -161,11 +162,11 @@ def httpsEnum(ip_address, port):
     ssl_results = subprocess.check_output(SSLSCAN, shell=True)
     print bcolors.OKGREEN + "INFO: CHECK FILE - Finished with SSLSCAN for " + ip_address + bcolors.ENDC
     write_to_file(ip_address, "ssl-scan", ssl_results)
-    HTTPSCANS = "nmap -sV -Pn -vv -p %s --script=http-vhosts,http-userdir-enum,http-apache-negotiation,http-backup-finder,http-config-backup,http-default-accounts,http-methods,http-method-tamper,http-passwd,http-robots.txt,http-devframework,http-enum,http-frontpage-login,http-git,http-iis-webdav-vuln,http-php-version,http-robots.txt,http-shellshock,http-vuln-cve2015-1635 -oN /root/Dropbox/Engagements/%s/%s_http.nmap %s" % (port, ip_address, ip_address, ip_address)
-    print bcolors.HEADER + HTTPSCANS + bcolors.ENDC
-    https_results = subprocess.check_output(HTTPSCANS, shell=True)
-    print bcolors.OKGREEN + "INFO: RESULT BELOW - Finished with HTTPS-scan for " + ip_address + bcolors.ENDC
-    print https_results
+    #HTTPSCANS = "nmap -sV -Pn -vv -p %s --script=http-vhosts,http-userdir-enum,http-apache-negotiation,http-backup-finder,http-config-backup,http-default-accounts,http-methods,http-method-tamper,http-passwd,http-robots.txt,http-devframework,http-enum,http-frontpage-login,http-git,http-iis-webdav-vuln,http-php-version,http-robots.txt,http-shellshock,http-vuln-cve2015-1635 -oN /root/Dropbox/Engagements/%s/%s_http.nmap %s" % (port, ip_address, ip_address, ip_address)
+    #print bcolors.HEADER + HTTPSCANS + bcolors.ENDC
+    #https_results = subprocess.check_output(HTTPSCANS, shell=True)
+    #print bcolors.OKGREEN + "INFO: RESULT BELOW - Finished with HTTPS-scan for " + ip_address + bcolors.ENDC
+    #print https_results
     return
 
 def mssqlEnum(ip_address, port):
@@ -177,7 +178,6 @@ def mssqlEnum(ip_address, port):
     print bcolors.OKGREEN + "INFO: RESULT BELOW - Finished with MSSQL-scan for " + ip_address + bcolors.ENDC
     print mssql_results
     return
-
 
 def smtpEnum(ip_address, port):
     print bcolors.HEADER + "INFO: Detected smtp on " + ip_address + ":" + port  + bcolors.ENDC
@@ -217,7 +217,6 @@ def samrEnum(ip_address, port):
     print samrdump_results
     write_to_file(ip_address, "samrdump", samrdump_results)
     return
-
 
 def ftpEnum(ip_address, port):
     print bcolors.HEADER + "INFO: Detected ftp on " + ip_address + ":" + port  + bcolors.ENDC
@@ -264,7 +263,7 @@ def vulnEnum(ip_address):
     vuln_results = subprocess.check_output(VULN, shell=True)
     print bcolors.OKGREEN + "INFO: CHECK FILE - Finished with Vuln-scans for " + ip_address + bcolors.ENDC
     print vuln_results
-    write_to_file(ip_address, "vulnscan", smbvuln_results)
+    write_to_file(ip_address, "vulnscan", vuln_results)
     return
 
 def nmapScan(ip_address):
