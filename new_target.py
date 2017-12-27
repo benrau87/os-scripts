@@ -103,7 +103,7 @@ def write_to_file(ip_address, enum_type, data):
 
 def dirb(ip_address, port, url_start):
     print bcolors.HEADER + "INFO: Starting dirb scan for " + ip_address + bcolors.ENDC
-    DIRBSCAN = "gobuster -u %s://%s:%s -e -w /usr/share/wordlists/dirb/common.txt -t 100 | tee /root/Dropbox/Engagements/%s/dirb-%s.txt" % (url_start, ip_address, port, ip_address, ip_address)
+    DIRBSCAN = "gobuster -u %s://%s:%s -e -w /usr/share/wordlists/dirb/common.txt -t 100 | tee /root/Dropbox/Engagements/%s/%s-dirb-%s.txt" % (url_start, ip_address, port, ip_address,  url_start, ip_address)
     #DIRBSCAN = "dirb %s://%s:%s -S -o /root/Dropbox/Engagements/%s/dirb-%s.txt" % (url_start, ip_address, port, ip_address, ip_address)
     print bcolors.HEADER + DIRBSCAN + bcolors.ENDC
     results_dirb = subprocess.check_output(DIRBSCAN, shell=True)
@@ -114,7 +114,7 @@ def dirb(ip_address, port, url_start):
 
 def wig(ip_address, port, url_start):
     print bcolors.HEADER + "INFO: Starting wig scan for " + ip_address + bcolors.ENDC
-    WIGSCAN = "wig-git %s://%s:%s -a -m  -w /root/Dropbox/Engagements/%s/wig-%s.txt | sed -r 's/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g'" % (url_start, ip_address, port, ip_address, ip_address)
+    WIGSCAN = "wig-git %s://%s:%s -a -m  -w /root/Dropbox/Engagements/%s/%s-wig-%s.txt | sed -r 's/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g'" % (url_start, ip_address, port, ip_address, url_start, ip_address)
     print bcolors.HEADER + WIGSCAN + bcolors.ENDC
     results_wig = subprocess.check_output(WIGSCAN, shell=True)
     print bcolors.OKGREEN + "INFO: RESULT BELOW - Finished with wig scan for " + ip_address + bcolors.ENDC
