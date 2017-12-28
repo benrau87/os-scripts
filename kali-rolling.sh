@@ -249,63 +249,6 @@ if [[ "$?" -ne 0 ]]; then
   echo -e " ${YELLOW}[i]${RESET} Here is ${BOLD}YOUR${RESET} local network ${BOLD}repository${RESET} information (Geo-IP based):\n"
   curl -sI http://http.kali.org/README
   exit 1
-fi
-
-
-##### Check to see if Kali is in a VM. If so, install "Virtual Machine Addons/Tools" for a "better" virtual experiment
-#if (dmidecode | grep -iq vmware); then
-  ##### Install virtual machines tools ~ http://docs.kali.org/general-use/install-vmware-tools-kali-guest
-#  (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}VMware's (open) virtual machine tools${RESET}"
-#  apt -y -qq install open-vm-tools-desktop fuse \
-#  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-#  apt -y -qq install make \
-#   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2    # There's a nags afterwards
-  ## Shared folders support for Open-VM-Tools (some odd bug)
-#  file=/usr/local/sbin/mount-shared-folders; [ -e "${file}" ] && cp -n $file{,.bkup}
-#  cat <<EOF > "${file}" \
-#    || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
-    
-# #!/bin/bash
-
-#vmware-hgfsclient | while read folder; do
-#  echo "[i] Mounting \${folder}   (/mnt/hgfs/\${folder})"
-#  mkdir -p "/mnt/hgfs/\${folder}"
-#  umount -f "/mnt/hgfs/\${folder}" 2>/dev/null
-#  vmhgfs-fuse -o allow_other -o auto_unmount ".host:/\${folder}" "/mnt/hgfs/\${folder}"
-#done
-
-#sleep 2s
-#EOF
-#  chmod +x "${file}"
-#  ln -sf "${file}" /root/Desktop/mount-shared-folders.sh
-#elif (dmidecode | grep -iq virtualbox); then
-  ##### Installing VirtualBox Guest Additions.   Note: Need VirtualBox 4.2.xx+ for the host (http://docs.kali.org/general-use/kali-linux-virtual-box-guest)
-#  (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}VirtualBox's guest additions${RESET}"
-#  apt -y -qq install virtualbox-guest-x11 \
-#    || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-#fi
-
-
-##### Check to see if there is a second Ethernet card (if so, set an static IP address)#
-#ip addr show eth1 &>/dev/null
-#if [[ "$?" == 0 ]]; then
-  ##### Set a static IP address (192.168.155.175/24) on eth1
- # (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Setting a ${GREEN}static IP address${RESET} (${BOLD}192.168.155.175/24${RESET}) on ${BOLD}eth1${RESET}"
- # ip addr add 192.168.155.175/24 dev eth1 2>/dev/null
- # route delete default gw 192.168.155.1 2>/dev/null
- # file=/etc/network/interfaces.d/eth1.cfg; [ -e "${file}" ] && cp -n $file{,.bkup}
- # grep -q '^iface eth1 inet static' "${file}" 2>/dev/null \
-  #  || cat <<EOF > "${file}"
-#auto eth1
-#iface eth1 inet static
-#    address 192.168.155.175
-#    netmask 255.255.255.0
-#    gateway 192.168.155.1
-#    post-up route delete default gw 192.168.155.1
-#EOF
-#else
- # echo -e "\n\n ${YELLOW}[i]${RESET} ${YELLOW}Skipping eth1${RESET} (missing nic)..." 1>&2
-#fi
 
 
 ##### Set static & protecting DNS name servers.   Note: May cause issues with forced values (e.g. captive portals etc)
@@ -365,45 +308,7 @@ systemctl disable ntp 2>/dev/null
 #--- Only used for stats at the end
 start_time=$(date +%s)
 
-
-##### Update OS from network repositories
-#(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) ${GREEN}Updating OS${RESET} from network repositories"
-#echo -e " ${YELLOW}[i]${RESET}  ...this ${BOLD}may take a while${RESET} depending on your Internet connection & Kali version/age"
-#for FILE in clean autoremove; do apt -y -qq "${FILE}"; done         # Clean up      clean remove autoremove autoclean
 export DEBIAN_FRONTEND=noninteractive
-#apt -qq update && APT_LISTCHANGES_FRONTEND=none apt -o Dpkg::Options::="--force-confnew" -y dist-upgrade --fix-missing 2>&1 \
-#  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-#--- Cleaning up temp stuff
-#for FILE in clean autoremove; do apt -y -qq "${FILE}"; done         # Clean up - clean remove autoremove autoclean
-#--- Check kernel stuff
-#_TMP=$(dpkg -l | grep linux-image- | grep -vc meta)
-#if [[ "${_TMP}" -gt 1 ]]; then
-#  echo -e "\n ${YELLOW}[i]${RESET} Detected ${YELLOW}multiple kernels${RESET}"
-#  TMP=$(dpkg -l | grep linux-image | grep -v meta | sort -t '.' -k 2 -g | tail -n 1 | grep "$(uname -r)")
-#  if [[ -z "${TMP}" ]]; then
-#    echo -e '\n '${RED}'[!]'${RESET}' You are '${RED}'not using the latest kernel'${RESET} 1>&2
-#    echo -e " ${YELLOW}[i]${RESET} You have it ${YELLOW}downloaded${RESET} & installed, just ${YELLOW}not USING IT${RESET}"
-#    echo -e "\n ${YELLOW}[i]${RESET} You ${YELLOW}NEED to REBOOT${RESET}, before re-running this script"
-#    exit 1
-#    sleep 30s
-#  else
-#    echo -e " ${YELLOW}[i]${RESET} ${YELLOW}You're using the latest kernel${RESET} (Good to continue)"
-#  fi
-#fi
-
-
-##### Install kernel headers
-#(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}kernel headers${RESET}"
-#apt -y -qq install make gcc "linux-headers-$(uname -r)" \
-#  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-#if [[ $? -ne 0 ]]; then
-#  echo -e ' '${RED}'[!]'${RESET}" There was an ${RED}issue installing kernel headers${RESET}" 1>&2
-#  echo -e " ${YELLOW}[i]${RESET} Are you ${YELLOW}USING${RESET} the ${YELLOW}latest kernel${RESET}?"
-#  echo -e " ${YELLOW}[i]${RESET} ${YELLOW}Reboot${RESET} your machine"
-#  exit 1
-#  sleep 30s
-#fi
-
 
 ##### Install "kali full" meta packages (default tool selection)
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}kali-linux-full${RESET} meta-package"
@@ -1701,18 +1606,6 @@ fi
 apt -y -qq install metasploit-framework \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 mkdir -p ~/.msf4/modules/{auxiliary,exploits,payloads,post}/
-#--- ASCII art
-#export GOCOW=1   # Always a cow logo ;)   Others: THISISHALLOWEEN (Halloween), APRILFOOLSPONIES (My Little Pony)
-#file=~/.bashrc; [ -e "${file}" ] && cp -n $file{,.bkup}
-#([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
-#grep -q '^GOCOW' "${file}" 2>/dev/null || echo 'GOCOW=1' >> "${file}"
-#--- Fix any port issues
-#file=$(find /etc/postgresql/*/main/ -maxdepth 1 -type f -name postgresql.conf -print -quit);
-#[ -e "${file}" ] && cp -n $file{,.bkup}
-#sed -i 's/port = .* #/port = 5432 /' "${file}"
-#--- Fix permissions - 'could not translate host name "localhost", service "5432" to address: Name or service not known'
-#chmod 0644 /etc/hosts
-#--- Start services
 systemctl stop postgresql
 systemctl start postgresql
 msfdb reinit
@@ -1862,20 +1755,6 @@ for plugin in modelines sort externaltools docinfo filebrowser quickopen time sp
   dconf write /org/gnome/gedit/plugins/active-plugins "${new}"
 done
 
-
-##### Install PyCharm (Community Edition)
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}PyCharm (Community Edition)${RESET} ~ Python IDE"
-timeout 300 curl --progress -k -L -f "https://download.jetbrains.com/python/pycharm-community-2016.2.3.tar.gz" > /tmp/pycharms-community.tar.gz \
-  || echo -e ' '${RED}'[!]'${RESET}" Issue downloading pycharms-community.tar.gz" 1>&2       #***!!! hardcoded version!
-if [ -e /tmp/pycharms-community.tar.gz ]; then
-  tar -xf /tmp/pycharms-community.tar.gz -C /tmp/
-  rm -rf /opt/pycharms/
-  mv -f /tmp/pycharm-community-*/ /opt/pycharms
-  mkdir -p /usr/local/bin/
-  ln -sf /opt/pycharms/bin/pycharm.sh /usr/local/bin/pycharms
-fi
-
-
 ##### Install wdiff
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}wdiff${RESET} ~ Compares two files word by word"
 apt -y -qq install wdiff wdiff-doc \
@@ -1898,45 +1777,6 @@ gconftool-2 -t int -s /apps/meld/edit_wrap_lines 2
 apt -y -qq install vbindiff \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 
-
-##### Install OpenVAS
-#if [[ "${openVAS}" != "false" ]]; then
-#  (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}OpenVAS${RESET} ~ vulnerability scanner"
-#  apt -y -qq install openvas \
-#    || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-#  openvas-setup
-  #--- Bug fix (target credentials creation)
-#  mkdir -p /var/lib/openvas/gnupg/
-  #--- Bug fix (keys)
-#  curl --progress -k -L -f "http://www.openvas.org/OpenVAS_TI.asc" | gpg --import - \
-#    || echo -e ' '${RED}'[!]'${RESET}" Issue downloading OpenVAS_TI.asc" 1>&2
-  #--- Make sure all services are correct
-#  openvas-start
-  #--- User control
-#  username="root"
-#  password="toor"
-#  (openvasmd --get-users | grep -q ^admin$) \
-#    && echo -n 'admin user: ' \
-#    && openvasmd --delete-user=admin
-#  (openvasmd --get-users | grep -q "^${username}$") \
-#    || (echo -n "${username} user: "; openvasmd --create-user="${username}"; openvasmd --user="${username}" --new-password="${password}" >/dev/null)
-#  echo -e " ${YELLOW}[i]${RESET} OpenVAS username: ${username}"
-#  echo -e " ${YELLOW}[i]${RESET} OpenVAS password: ${password}   ***${BOLD}CHANGE THIS ASAP${RESET}***"
-#  echo -e " ${YELLOW}[i]${RESET} Run: # openvasmd --user=root --new-password='<NEW_PASSWORD>'"
-#  sleep 3s
-#  openvas-check-setup
-  #--- Remove from start up
-#  systemctl disable openvas-manager
-#  systemctl disable openvas-scanner
-#  systemctl disable greenbone-security-assistant
-  #--- Setup alias
-#  file=~/.bash_aliases; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/bash.bash_aliases
-#  grep -q '^## openvas' "${file}" 2>/dev/null \
-#    || echo -e '## openvas\nalias openvas="openvas-stop; openvas-start; sleep 3s; xdg-open https://127.0.0.1:9392/ >/dev/null 2>&1"\n' >> "${file}"
-#  source "${file}" || source ~/.zshrc
-#else
-#  echo -e "\n\n ${YELLOW}[i]${RESET} ${YELLOW}Skipping OpenVAS${RESET} (missing: '$0 ${BOLD}--openvas${RESET}')..." 1>&2
-#fi
 
 
 ##### Install vFeed
@@ -2165,12 +2005,6 @@ EOF
 chmod +x "${file}"
 
 
-##### Install libreoffice
-#(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}LibreOffice${RESET} ~ GUI office suite"
-#apt -y -qq install libreoffice \
-#  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-
-
 ##### Install ipcalc & sipcalc
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}ipcalc${RESET} & ${GREEN}sipcalc${RESET} ~ CLI subnet calculators"
 apt -y -qq install ipcalc sipcalc \
@@ -2296,30 +2130,6 @@ apt -y -qq install gparted \
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}daemonfs${RESET} ~ GUI file monitor"
 apt -y -qq install daemonfs \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-
-
-##### Install filezilla
-#(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}FileZilla${RESET} ~ GUI file transfer"
-#apt -y -qq install filezilla \
-#  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-##--- Configure filezilla
-#export DISPLAY=:0.0
-#timeout 5 filezilla >/dev/null 2>&1     # Start and kill. Files needed for first time run
-#mkdir -p ~/.config/filezilla/
-#file=~/.config/filezilla/filezilla.xml; [ -e "${file}" ] && cp -n $file{,.bkup}
-#[ ! -e "${file}" ] && cat <<EOF> "${file}"
-#<?xml version="1.0" encoding="UTF-8"?>
-#<FileZilla3 version="3.15.0.2" platform="*nix">
-#  <Settings>
-#    <Setting name="Default editor">0</Setting>
-#    <Setting name="Always use default editor">0</Setting>
-#  </Settings>
-#</FileZilla3>
-#fi
-#EOF
-#sed -i 's#^.*"Default editor".*#\t<Setting name="Default editor">2/usr/bin/gedit</Setting>#' "${file}"
-#[ -e /usr/bin/atom ] && sed -i 's#^.*"Default editor".*#\t<Setting name="Default editor">2/usr/bin/atom</Setting>#' "${file}"
-#sed -i 's#^.*"Always use default editor".*#\t<Setting name="Always use default editor">1</Setting>#' "${file}"
 
 
 ##### Install ncftp
@@ -2883,6 +2693,7 @@ for FILE in cc gcc g++ gcc-multilib make automake libc6 libc6-dev libc6-amd64 li
   apt -y -qq install "${FILE}" 2>/dev/null
 done
 
+apt-get install --fix-broken
 
 ##### Install MinGW ~ cross compiling suite
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}MinGW${RESET} ~ cross compiling suite"
@@ -2890,6 +2701,7 @@ for FILE in mingw-w64 binutils-mingw-w64 gcc-mingw-w64 cmake   mingw-w64-dev min
   apt -y -qq install "${FILE}" 2>/dev/null
 done
 
+apt-get install --fix-broken
 
 ##### Install WINE
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}WINE${RESET} ~ run Windows programs on *nix"
