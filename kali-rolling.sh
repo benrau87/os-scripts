@@ -412,6 +412,7 @@ echo -e " ${YELLOW}[i]${RESET}  ...this ${BOLD}may take a while${RESET} dependin
 apt -y -qq install kali-linux-full \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 
+apt-get install --fix-broken
 
 ##### Set audio level
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Setting ${GREEN}audio${RESET} levels"
@@ -1805,6 +1806,8 @@ echo "Started at: $(date)"
 systemctl start postgresql
 msfdb start
 msfconsole -q -x 'version;db_status;sleep 310;exit'
+
+apt-get install --fix-broken
 
 ####Install doubletap
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Doubletap${RESET} ~ Vuln scanner"
