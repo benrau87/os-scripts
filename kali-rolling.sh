@@ -2075,6 +2075,24 @@ file=~/.wireshark/recent_common;   #[ -e "${file}" ] && cp -n $file{,.bkup}
 [ -e "/usr/share/wireshark/init.lua" ] \
   && mv -f /usr/share/wireshark/init.lua{,.disabled}
 
+##### Install Parsero from git
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Parsero${RESET} ~ Robots stuff"
+apt -y -qq install git \
+  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
+git clone -q -b master  https://github.com/behindthefirewalls/Parsero.git /opt/parsero-git/ \
+  || echo -e ' '${RED}'[!] Issue when git cloning'${RESET} 1>&2
+pushd /opt/parsero-git/ >/dev/null
+git pull -q
+popd >/dev/null
+#--- Add to path
+mkdir -p /usr/local/bin/
+file=/usr/local/bin/parsero-git
+cat <<EOF > "${file}" \
+  || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
+#!/bin/bash
+cd /opt/parsero-git/ && python3 parsero.py "\$@"
+EOF
+chmod +x "${file}"
 
 ##### Install silver searcher
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}silver searcher${RESET} ~ code searching"
