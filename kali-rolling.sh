@@ -1806,6 +1806,20 @@ systemctl start postgresql
 msfdb start
 msfconsole -q -x 'version;db_status;sleep 310;exit'
 
+####Install doubletap
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Doubletap${RESET} ~ Vuln scanner"
+git clone -q -b master https://github.com/benrau87/doubletap /opt/doubletap-git/ 
+pushd /opt/doubletap-git/ >/dev/null
+#--- Add to path
+mkdir -p /usr/local/bin/
+file=/usr/local/bin/doubletap-git
+cat <<EOF > "${file}" \
+  || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
+#!/bin/bash
+cd /opt/doubletap-git/ && python doubletap.py "\$@"
+EOF
+chmod +x "${file}"
+
 
 ##### Install exe2hex
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}exe2hex${RESET} ~ Inline file transfer"
