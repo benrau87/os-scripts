@@ -1954,6 +1954,11 @@ ln -sf /opt/jsp-filebrowser /usr/share/webshells/jsp/jsp-filebrowser
 apt -y -qq install htshells \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 
+####Vulners
+git clone -q -b master https://github.com/vulnersCom/nmap-vulners /tmp/vulners
+cp /tmp/vulners/vulners.nse /user/share/nmap/scripts
+nmap --script-updatedb
+
 
 ##### Install python-pty-shells
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}python-pty-shells${RESET} ~ PTY shells"
