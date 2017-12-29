@@ -225,7 +225,6 @@ timeout 300 curl --progress -k -L -f "https://status.github.com/api/status.json"
   || (echo -e ' '${RED}'[!]'${RESET}" ${RED}GitHub is currently having issues${RESET}. ${BOLD}Lots may fail${RESET}. See: https://status.github.com/" 1>&2 \
     && exit 1)
 
-
 ##### Enable default network repositories ~ http://docs.kali.org/general-use/kali-linux-sources-list-repositories
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Enabling default OS ${GREEN}network repositories${RESET}"
 #--- Add network repositories
@@ -243,6 +242,21 @@ sed -i '/kali/ s/^\( \|\t\|\)deb cdrom/#deb cdrom/g' "${file}"
 dpkg --configure -a
 #--- Update
 apt -qq update
+if [[ "$?" -ne 0 ]]; then
+  echo -e ' '${RED}'[!]'${RESET}" There was an ${RED}issue accessing network repositories${RESET}" 1>&2
+  echo -e " ${YELLOW}[i]${RESET} Are the remote network repositories ${YELLOW}currently being sync'd${RESET}?"
+  echo -e " ${YELLOW}[i]${RESET} Here is ${BOLD}YOUR${RESET} local network ${BOLD}repository${RESET} information (Geo-IP based):\n"
+  curl -sI http://http.kali.org/README
+  exit 1
+fi
+
+
+##### Check to see if Kali is in a VM. If so, install "Virtual Machine Addons/Tools" for a "better" virtual experiment
+if (dmidecode | grep -iq vmware); then
+  ##### Install virtual machines tools ~ http://docs.kali.org/general-use/install-vmware-tools-kali-guest
+  (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}VMware's (open) virtual machine tools${RESET}"
+  apt -y -qq install open-vm-tools-desktop fuse 
+fi
 
 ##### Set static & protecting DNS name servers.   Note: May cause issues with forced values (e.g. captive portals etc)
 if [[ "${hardenDNS}" != "false" ]]; then
@@ -300,6 +314,44 @@ systemctl restart ntp
 systemctl disable ntp 2>/dev/null
 #--- Only used for stats at the end
 start_time=$(date +%s)
+
+##### Update OS from network repositories
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) ${GREEN}Updating OS${RESET} from network repositories"
+echo -e " ${YELLOW}[i]${RESET}  ...this ${BOLD}may take a while${RESET} depending on your Internet connection & Kali version/age"
+for FILE in clean autoremove; do apt -y -qq "${FILE}"; done         # Clean up      clean remove autoremove autoclean
+export DEBIAN_FRONTEND=noninteractive
+apt -qq update && APT_LISTCHANGES_FRONTEND=none apt -o Dpkg::Options::="--force-confnew" -y dist-upgrade --fix-missing 2>&1 \
+  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
+#--- Cleaning up temp stuff
+for FILE in clean autoremove; do apt -y -qq "${FILE}"; done         # Clean up - clean remove autoremove autoclean
+#--- Check kernel stuff
+_TMP=$(dpkg -l | grep linux-image- | grep -vc meta)
+if [[ "${_TMP}" -gt 1 ]]; then
+  echo -e "\n ${YELLOW}[i]${RESET} Detected ${YELLOW}multiple kernels${RESET}"
+  TMP=$(dpkg -l | grep linux-image | grep -v meta | sort -t '.' -k 2 -g | tail -n 1 | grep "$(uname -r)")
+  if [[ -z "${TMP}" ]]; then
+    echo -e '\n '${RED}'[!]'${RESET}' You are '${RED}'not using the latest kernel'${RESET} 1>&2
+    echo -e " ${YELLOW}[i]${RESET} You have it ${YELLOW}downloaded${RESET} & installed, just ${YELLOW}not USING IT${RESET}"
+    #echo -e "\n ${YELLOW}[i]${RESET} You ${YELLOW}NEED to REBOOT${RESET}, before re-running this script"
+    #exit 1
+    sleep 30s
+  else
+    echo -e " ${YELLOW}[i]${RESET} ${YELLOW}You're using the latest kernel${RESET} (Good to continue)"
+  fi
+fi
+
+
+##### Install kernel headers
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}kernel headers${RESET}"
+apt -y -qq install make gcc "linux-headers-$(uname -r)" \
+  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
+if [[ $? -ne 0 ]]; then
+  echo -e ' '${RED}'[!]'${RESET}" There was an ${RED}issue installing kernel headers${RESET}" 1>&2
+  echo -e " ${YELLOW}[i]${RESET} Are you ${YELLOW}USING${RESET} the ${YELLOW}latest kernel${RESET}?"
+  echo -e " ${YELLOW}[i]${RESET} ${YELLOW}Reboot${RESET} your machine"
+  #exit 1
+  sleep 30s
+fi
 
 export DEBIAN_FRONTEND=noninteractive
 
