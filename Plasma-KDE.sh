@@ -361,7 +361,7 @@ echo -e " ${YELLOW}[i]${RESET}  ...this ${BOLD}may take a while${RESET} dependin
 #--- Kali's default tools ~ https://www.kali.org/news/kali-linux-metapackages/
 apt -y -qq install kali-linux-full 
 
-apt-get install --fix-broken
+apt-get -y install --fix-broken
 
 ##### Set audio level
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Setting ${GREEN}audio${RESET} levels"
