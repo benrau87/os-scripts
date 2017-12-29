@@ -1308,7 +1308,13 @@ apt -y -qq install exe2hexbat \
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}MPC${RESET} ~ MSFPC"
 apt -y -qq install msfpc \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-  
+
+#### Install Dropbox
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Dropbox${RESET} ~ Cloud file storage"
+cd ~ && wget -O - "https://www.dropbox.com/download?plat=lnx.x86" | tar xzf -
+~/.dropbox-dist/dropboxd
+cd -
+
 ##### Install Sublime
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}MPC${RESET} ~ Sublime Text"
 wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add - 
