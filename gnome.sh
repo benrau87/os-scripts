@@ -1322,6 +1322,26 @@ git clone -q -b master https://github.com/radare/radare2 /opt/radare2-git/  \
 cd /opt/radare2-git/sys
 bash install.sh
 
+cat <<EOF > ~/.radare2rc \
+e cfg.fortunes=false
+e cfg.bigendian=true
+
+# Show comments at right of disassembly if they fit in screen
+e asm.cmt.right=true
+
+# Shows pseudocode in disassembly. Eg mov eax, str.ok = > eax = str.ok
+e asm.pseudo = true
+
+# Display stack and register values on top of disasembly view (visual mode)
+e cmd.stack = true
+
+# Solarized theme
+eco solarized
+
+# Use UTF-8 to show cool arrows that do not look like crap :)
+e scr.utf8 = true
+
+EOF
 ##### Install MPC
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}MPC${RESET} ~ MSFPC"
 apt -y -qq install msfpc \
