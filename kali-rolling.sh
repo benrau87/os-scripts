@@ -3084,6 +3084,15 @@ git clone -q -b master https://github.com/PowerShellEmpire/Empire.git /opt/empir
 pushd /opt/empire-git/ >/dev/null
 git pull -q
 popd >/dev/null
+#--- Add to path
+mkdir -p /usr/local/bin/
+file=/usr/local/bin/empire-git
+cat <<EOF > "${file}" \
+  || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
+#!/bin/bash
+cd /opt/empire-git/ && python empire
+EOF
+chmod +x "${file}"
 
 
 ##### Install wig (https://bugs.kali.org/view.php?id=1932)
