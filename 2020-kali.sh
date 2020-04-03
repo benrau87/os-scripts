@@ -67,7 +67,7 @@ export DEBIAN_FRONTEND=noninteractive
 apt -y -qq install xrdp 
 systemctl restart xrdp
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-  
+
 #--- Configuring XFCE (Power Options)
 cat <<EOF > ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-power-manager.xml \
   || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
@@ -681,6 +681,22 @@ cat <<EOF > "${file}" \
 cd /opt/doubletap-git/ && python3 doubletap.py "\$@"
 EOF
 chmod +x "${file}"
+
+####Install discover
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Discover${RESET} ~ OSINT scanner"
+git clone -q -b master https://github.com/leebaird/discover /opt/discover-git/
+./opt/discover-git/update.sh 
+pushd /opt/discover-git/ >/dev/null
+#--- Add to path
+mkdir -p /usr/local/bin/
+file=/usr/local/bin/discover-git
+cat <<EOF > "${file}" \
+  || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
+#!/bin/bash
+cd /opt/discover-git/ && ./discover.sh "\$@"
+EOF
+chmod +x "${file}"
+
   
 ##### Install Sublime
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}MPC${RESET} ~ Sublime Text"
