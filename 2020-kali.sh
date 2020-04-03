@@ -65,8 +65,9 @@ export DEBIAN_FRONTEND=noninteractive
 ##### Install xrdp
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}zip${RESET} & ${GREEN}xrdp${RESET} ~ RDP support"
 apt -y -qq install xrdp 
-systemctl restart xrdp
+systemctl restart xrdp \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
+  
 
 #--- Configuring XFCE (Power Options)
 cat <<EOF > ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-power-manager.xml \
@@ -750,8 +751,8 @@ echo -e 'application/x-ms-dos-executable=wine.desktop' >> "${file}"
 
 ##### Install Empire
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Empire${RESET} ~ PowerShell post-exploitation"
-apt -y -qq install powershell-empire
-
+apt -y -qq install powershell-empire \
+  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 
 ##### Install ashttp
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}ashttp${RESET} ~ terminal via the web"
@@ -762,7 +763,6 @@ git clone -q -b master https://github.com/JulienPalard/ashttp.git /opt/ashttp-gi
 pushd /opt/ashttp-git/ >/dev/null
 git pull -q
 popd >/dev/null
-
 
 ##### Preparing a jail ~ http://allanfeid.com/content/creating-chroot-jail-ssh-access // http://www.cyberciti.biz/files/lighttpd/l2chroot.txt
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Preparing up a ${GREEN}jail${RESET} ~ testing environment"
