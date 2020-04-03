@@ -62,7 +62,12 @@ if [[ "$?" -ne 0 ]]; then
 
 export DEBIAN_FRONTEND=noninteractive
 
-
+##### Install xrdp
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}zip${RESET} & ${GREEN}xrdp${RESET} ~ RDP support"
+apt -y -qq install xrdp 
+systemctl restart xrdp
+  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
+  
 #--- Configuring XFCE (Power Options)
 cat <<EOF > ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-power-manager.xml \
   || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
