@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#-NO USER INTERACTIONS
+export DEBIAN_FRONTEND=noninteractive
 ##### (Cosmetic) Colour output
 RED="\033[01;31m"      # Issues/Errors
 GREEN="\033[01;32m"    # Success
@@ -51,6 +53,7 @@ if [[ "$?" -ne 0 ]]; then
   echo -e " ${YELLOW}[i]${RESET} Here is ${BOLD}YOUR${RESET} local network ${BOLD}repository${RESET} information (Geo-IP based):\n"
   curl -sI http://http.kali.org/README
   exit 1
+fi
 #--- Upgrade
 apt -qq -y upgrade
 if [[ "$?" -ne 0 ]]; then
@@ -59,18 +62,10 @@ if [[ "$?" -ne 0 ]]; then
   echo -e " ${YELLOW}[i]${RESET} Here is ${BOLD}YOUR${RESET} local network ${BOLD}repository${RESET} information (Geo-IP based):\n"
   curl -sI http://http.kali.org/README
   exit 1
-
-export DEBIAN_FRONTEND=noninteractive
-
-##### Install xrdp
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}zip${RESET} & ${GREEN}xrdp${RESET} ~ RDP support"
-apt -y -qq install xrdp 
-systemctl restart xrdp \
-  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-  
+fi
 
 #--- Configuring XFCE (Power Options)
-cat <<EOF > ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-power-manager.xml \
+cat <<EOF > ~/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-power-manager.xml
   || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
 <?xml version="1.0" encoding="UTF-8"?>
 
@@ -85,7 +80,6 @@ cat <<EOF > ~/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-power-manager.xml \
 </channel>
 EOF
 
-
 ##### Configure bash - all users
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Configuring ${GREEN}bash${RESET} ~ CLI shell"
 file=/etc/bash.bashrc; [ -e "${file}" ] && cp -n $file{,.bkup}   #~/.bashrc
@@ -93,8 +87,6 @@ grep -q "cdspell" "${file}" \
   || echo "shopt -sq cdspell" >> "${file}"             # Spell check 'cd' commands
 grep -q "autocd" "${file}" \
  || echo "shopt -s autocd" >> "${file}"                # So you don't have to 'cd' before a folder
-#grep -q "CDPATH" "${file}" \
-# || echo "CDPATH=/etc:/usr/share/:/opt" >> "${file}"  # Always CD into these folders
 grep -q "checkwinsize" "${file}" \
  || echo "shopt -sq checkwinsize" >> "${file}"         # Wrap lines correctly after resizing
 grep -q "nocaseglob" "${file}" \
@@ -103,9 +95,9 @@ grep -q "HISTSIZE" "${file}" \
  || echo "HISTSIZE=10000" >> "${file}"                 # Bash history (memory scroll back)
 grep -q "HISTFILESIZE" "${file}" \
  || echo "HISTFILESIZE=10000" >> "${file}"             # Bash history (file .bash_history)
+
 #--- Apply new configs
 source "${file}" || source ~/.zshrc
-
 
 ##### Install bash colour - all users
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}bash colour${RESET} ~ colours shell output"
@@ -125,12 +117,13 @@ grep -q "^alias ll='ls $LS_OPTIONS -l'" "${file}" 2>/dev/null \
   || echo "alias ll='ls $LS_OPTIONS -l'" >> "${file}"
 grep -q "^alias l='ls $LS_OPTIONS -lA'" "${file}" 2>/dev/null \
   || echo "alias l='ls $LS_OPTIONS -lA'" >> "${file}"
+
 #--- All other users that are made afterwards
 file=/etc/skel/.bashrc   #; [ -e "${file}" ] && cp -n $file{,.bkup}
 sed -i 's/.*force_color_prompt=.*/force_color_prompt=yes/' "${file}"
+
 #--- Apply new configs
 source "${file}" || source ~/.zshrc
-
 
 ##### Install grc
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}grc${RESET} ~ colours shell output"
@@ -165,17 +158,6 @@ grep -q '^## grc wdiff alias' "${file}" 2>/dev/null \
 #--- Apply new aliases
 source "${file}" || source ~/.zshrc
 
-
-##### Install bash completion - all users
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}bash completion${RESET} ~ tab complete CLI commands"
-apt -y -qq install bash-completion \
-  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-file=/etc/bash.bashrc; [ -e "${file}" ] && cp -n $file{,.bkup}   #~/.bashrc
-sed -i '/# enable bash completion in/,+7{/enable bash completion/!s/^#//}' "${file}"
-#--- Apply new configs
-source "${file}" || source ~/.zshrc
-
-
 ##### Configure aliases - root user
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Configuring ${GREEN}aliases${RESET} ~ CLI shortcuts"
 #--- Enable defaults - root user
@@ -185,6 +167,7 @@ for FILE in /etc/bash.bashrc ~/.bashrc ~/.bash_aliases; do    #/etc/profile /etc
   cp -n $FILE{,.bkup}
   sed -i 's/#alias/alias/g' "${FILE}"
 done
+
 #--- General system ones
 file=~/.bash_aliases; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/bash.bash_aliases
 ([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
@@ -343,7 +326,7 @@ sed -i 's_^TerminalEmulator=.*_TerminalEmulator=debian-x-terminal-emulator_' "${
 
 
 ##### Install ZSH & Oh-My-ZSH - root user.   Note:  'Open terminal here', will not work with ZSH.   Make sure to have tmux already installed
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}ZSH${RESET} & ${GREEN}Oh-My-ZSH${RESET} ~ unix shell"
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Configuring ${GREEN}ZSH${RESET} & ${GREEN}Oh-My-ZSH${RESET} ~ unix shell"
 apt -y -qq install zsh git curl \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 #--- Setup oh-my-zsh
@@ -370,9 +353,8 @@ sed -i 's/plugins=(.*)/plugins=(git git-extras tmux dirhistory python pip)/' "${
 #--- Set zsh as default shell (current user)
 chsh -s "$(which zsh)"
 
-
 ##### Install tmux - all users
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}tmux${RESET} ~ multiplex virtual consoles"
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Configuring ${GREEN}tmux${RESET} ~ multiplex virtual consoles"
 apt -y -qq install tmux \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 file=~/.tmux.conf; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/tmux.conf
@@ -666,6 +648,12 @@ msfconsole -q -x 'version;db_status;sleep 310;exit'
 
 apt-get install --fix-broken
 
+##### Install xrdp
+#(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}zip${RESET} & ${GREEN}xrdp${RESET} ~ RDP support"
+#apt -y -qq install xrdp 
+#systemctl restart xrdp \
+#  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
+
 ####Install doubletap
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Doubletap${RESET} ~ Vuln scanner"
 git clone -q -b master https://github.com/benrau87/doubletap /opt/doubletap-git/ 
@@ -754,15 +742,6 @@ echo -e 'application/x-ms-dos-executable=wine.desktop' >> "${file}"
 apt -y -qq install powershell-empire \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 
-##### Install ashttp
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}ashttp${RESET} ~ terminal via the web"
-apt -y -qq install git \
-  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-git clone -q -b master https://github.com/JulienPalard/ashttp.git /opt/ashttp-git/ \
-  || echo -e ' '${RED}'[!] Issue when git cloning'${RESET} 1>&2
-pushd /opt/ashttp-git/ >/dev/null
-git pull -q
-popd >/dev/null
 
 ##### Preparing a jail ~ http://allanfeid.com/content/creating-chroot-jail-ssh-access // http://www.cyberciti.biz/files/lighttpd/l2chroot.txt
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Preparing up a ${GREEN}jail${RESET} ~ testing environment"
