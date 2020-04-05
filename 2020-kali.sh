@@ -65,7 +65,7 @@ if [[ "$?" -ne 0 ]]; then
 fi
 
 #--- Configuring XFCE (Power Options)
-cat <<EOF > ~/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-power-manager.xml
+cat <<EOF > /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-power-manager.xml
   || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
 <?xml version="1.0" encoding="UTF-8"?>
 
@@ -97,7 +97,9 @@ grep -q "HISTFILESIZE" "${file}" \
  || echo "HISTFILESIZE=10000" >> "${file}"             # Bash history (file .bash_history)
 
 #--- Apply new configs
-source "${file}" || source ~/.zshrc
+#source "${file}" || source ~/.zshrc
+source "${file}" || source /etc/bash.bashrc
+
 
 ##### Install bash colour - all users
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}bash colour${RESET} ~ colours shell output"
@@ -123,40 +125,10 @@ file=/etc/skel/.bashrc   #; [ -e "${file}" ] && cp -n $file{,.bkup}
 sed -i 's/.*force_color_prompt=.*/force_color_prompt=yes/' "${file}"
 
 #--- Apply new configs
-source "${file}" || source ~/.zshrc
+#source "${file}" || source ~/.zshrc
+source "${file}" || source /etc/bash.bashrc
 
-##### Install grc
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}grc${RESET} ~ colours shell output"
-apt -y -qq install grc \
-  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-#--- Setup aliases
-file=~/.bash_aliases; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/bash.bash_aliases
-([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
-grep -q '^## grc diff alias' "${file}" 2>/dev/null \
-  || echo -e "## grc diff alias\nalias diff='$(which grc) $(which diff)'\n" >> "${file}"
-grep -q '^## grc dig alias' "${file}" 2>/dev/null \
-  || echo -e "## grc dig alias\nalias dig='$(which grc) $(which dig)'\n" >> "${file}"
-grep -q '^## grc gcc alias' "${file}" 2>/dev/null \
-  || echo -e "## grc gcc alias\nalias gcc='$(which grc) $(which gcc)'\n" >> "${file}"
-grep -q '^## grc ifconfig alias' "${file}" 2>/dev/null \
-  || echo -e "## grc ifconfig alias\nalias ifconfig='$(which grc) $(which ifconfig)'\n" >> "${file}"
-grep -q '^## grc mount alias' "${file}" 2>/dev/null \
-  || echo -e "## grc mount alias\nalias mount='$(which grc) $(which mount)'\n" >> "${file}"
-grep -q '^## grc netstat alias' "${file}" 2>/dev/null \
-  || echo -e "## grc netstat alias\nalias netstat='$(which grc) $(which netstat)'\n" >> "${file}"
-grep -q '^## grc ping alias' "${file}" 2>/dev/null \
-  || echo -e "## grc ping alias\nalias ping='$(which grc) $(which ping)'\n" >> "${file}"
-grep -q '^## grc ps alias' "${file}" 2>/dev/null \
-  || echo -e "## grc ps alias\nalias ps='$(which grc) $(which ps)'\n" >> "${file}"
-grep -q '^## grc tail alias' "${file}" 2>/dev/null \
-  || echo -e "## grc tail alias\nalias tail='$(which grc) $(which tail)'\n" >> "${file}"
-grep -q '^## grc traceroute alias' "${file}" 2>/dev/null \
-  || echo -e "## grc traceroute alias\nalias traceroute='$(which grc) $(which traceroute)'\n" >> "${file}"
-grep -q '^## grc wdiff alias' "${file}" 2>/dev/null \
-  || echo -e "## grc wdiff alias\nalias wdiff='$(which grc) $(which wdiff)'\n" >> "${file}"
-#configure  #esperanto  #ldap  #e  #cvs  #log  #mtr  #ls  #irclog  #mount2  #mount
-#--- Apply new aliases
-source "${file}" || source ~/.zshrc
+
 
 ##### Configure aliases - root user
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Configuring ${GREEN}aliases${RESET} ~ CLI shortcuts"
@@ -168,8 +140,13 @@ for FILE in /etc/bash.bashrc ~/.bashrc ~/.bash_aliases; do    #/etc/profile /etc
   sed -i 's/#alias/alias/g' "${FILE}"
 done
 
+#### Add capital tab complete
+echo "set completion-ignore-case on" >> /etc/inputrc
+echo "set show-all-if-ambiguous on" >> /etc/inputrc
+
 #--- General system ones
-file=~/.bash_aliases; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/bash.bash_aliases
+touch /etc/bash.bashrc
+file=/etc/bash.bashrc; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/bash.bash_aliases
 ([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
 grep -q '^## grep aliases' "${file}" 2>/dev/null \
   || echo -e '## grep aliases\nalias grep="grep --color=always"\nalias ngrep="grep -n"\n' >> "${file}"
@@ -282,163 +259,7 @@ grep -q '^## edb' "${file}" 2>/dev/null \
 grep -q '^## wordlist' "${file}" 2>/dev/null \
   || echo -e '## wordlist\nalias wordlists="cd /usr/share/wordlists/"\n' >> "${file}"
 #--- Apply new aliases
-source "${file}" || source ~/.zshrc
-#--- Check
-#alias
-
-
-##### Install (GNOME) Terminator
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing (GNOME) ${GREEN}Terminator${RESET} ~ multiple terminals in a single window"
-apt -y -qq install terminator \
-  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-#--- Configure terminator
-mkdir -p ~/.config/terminator/
-file=~/.config/terminator/config; [ -e "${file}" ] && cp -n $file{,.bkup}
-cat <<EOF > "${file}" \
-  || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
-[global_config]
-  enabled_plugins = TerminalShot, LaunchpadCodeURLHandler, APTURLHandler, LaunchpadBugURLHandler
-[keybindings]
-[profiles]
-  [[default]]
-    background_darkness = 0.9
-    scroll_on_output = False
-    copy_on_selection = True
-    background_type = transparent
-    scrollback_infinite = True
-    show_titlebar = False
-[layouts]
-  [[default]]
-    [[[child1]]]
-      type = Terminal
-      parent = window0
-    [[[window0]]]
-      type = Window
-      parent = ""
-[plugins]
-EOF
-#--- Set terminator for XFCE's default
-mkdir -p ~/.config/xfce4/
-file=~/.config/xfce4/helpers.rc; [ -e "${file}" ] && cp -n $file{,.bkup}    #exo-preferred-applications   #xdg-mime default
-([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
-sed -i 's_^TerminalEmulator=.*_TerminalEmulator=debian-x-terminal-emulator_' "${file}" 2>/dev/null \
-  || echo -e 'TerminalEmulator=debian-x-terminal-emulator' >> "${file}"
-
-
-##### Install ZSH & Oh-My-ZSH - root user.   Note:  'Open terminal here', will not work with ZSH.   Make sure to have tmux already installed
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Configuring ${GREEN}ZSH${RESET} & ${GREEN}Oh-My-ZSH${RESET} ~ unix shell"
-apt -y -qq install zsh git curl \
-  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-#--- Setup oh-my-zsh
-timeout 300 curl --progress -k -L -f "https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh" | zsh
-#--- Configure zsh
-file=~/.zshrc; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/zsh/zshrc
-([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
-grep -q 'interactivecomments' "${file}" 2>/dev/null \
-  || echo 'setopt interactivecomments' >> "${file}"
-grep -q 'ignoreeof' "${file}" 2>/dev/null \
-  || echo 'setopt ignoreeof' >> "${file}"
-grep -q 'correctall' "${file}" 2>/dev/null \
-  || echo 'setopt correctall' >> "${file}"
-grep -q 'globdots' "${file}" 2>/dev/null \
-  || echo 'setopt globdots' >> "${file}"
-grep -q '.bash_aliases' "${file}" 2>/dev/null \
-  || echo 'source $HOME/.bash_aliases' >> "${file}"
-grep -q '/usr/bin/tmux' "${file}" 2>/dev/null \
-  || echo '#if ([[ -z "$TMUX" && -n "$SSH_CONNECTION" ]]); then /usr/bin/tmux attach || /usr/bin/tmux new; fi' >> "${file}"   # If not already in tmux and via SSH
-#--- Configure zsh (themes) ~ https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-sed -i 's/ZSH_THEME=.*/ZSH_THEME="mh"/' "${file}"   # Other themes: mh, jreese,   alanpeabody,   candy,   terminalparty, kardan,   nicoulaj, sunaku
-#--- Configure oh-my-zsh
-sed -i 's/plugins=(.*)/plugins=(git git-extras tmux dirhistory python pip)/' "${file}"
-#--- Set zsh as default shell (current user)
-chsh -s "$(which zsh)"
-
-##### Install tmux - all users
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Configuring ${GREEN}tmux${RESET} ~ multiplex virtual consoles"
-apt -y -qq install tmux \
-  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-file=~/.tmux.conf; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/tmux.conf
-#--- Configure tmux
-cat <<EOF > "${file}" \
-  || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
-#-Settings---------------------------------------------------------------------
-## Make it like screen (use CTRL+a)
-unbind C-b
-set -g prefix C-a
-
-## Pane switching (SHIFT+ARROWS)
-bind-key -n S-Left select-pane -L
-bind-key -n S-Right select-pane -R
-bind-key -n S-Up select-pane -U
-bind-key -n S-Down select-pane -D
-
-## Windows switching (ALT+ARROWS)
-bind-key -n M-Left  previous-window
-bind-key -n M-Right next-window
-
-## Windows re-ording (SHIFT+ALT+ARROWS)
-bind-key -n M-S-Left swap-window -t -1
-bind-key -n M-S-Right swap-window -t +1
-
-## Activity Monitoring
-setw -g monitor-activity on
-set -g visual-activity on
-
-## Set defaults
-set -g default-terminal screen-256color
-set -g history-limit 5000
-
-## Default windows titles
-set -g set-titles on
-set -g set-titles-string '#(whoami)@#H - #I:#W'
-
-## Last window switch
-bind-key C-a last-window
-
-## Reload settings (CTRL+a -> r)
-unbind r
-bind r source-file /etc/tmux.conf
-
-## Load custom sources
-#source ~/.bashrc   #(issues if you use /bin/bash & Debian)
-
-EOF
-[ -e /bin/zsh ] \
-  && echo -e '## Use ZSH as default shell\nset-option -g default-shell /bin/zsh\n' >> "${file}"
-cat <<EOF >> "${file}"
-## Show tmux messages for longer
-set -g display-time 3000
-
-## Status bar is redrawn every minute
-set -g status-interval 60
-
-
-#-Theme------------------------------------------------------------------------
-## Default colours
-set -g status-bg black
-set -g status-fg white
-
-## Left hand side
-set -g status-left-length '34'
-set -g status-left '#[fg=green,bold]#(whoami)#[default]@#[fg=yellow,dim]#H #[fg=green,dim][#[fg=yellow]#(cut -d " " -f 1-3 /proc/loadavg)#[fg=green,dim]]'
-
-## Inactive windows in status bar
-set-window-option -g window-status-format '#[fg=red,dim]#I#[fg=grey,dim]:#[default,dim]#W#[fg=grey,dim]'
-
-## Current or active window in status bar
-#set-window-option -g window-status-current-format '#[bg=white,fg=red]#I#[bg=white,fg=grey]:#[bg=white,fg=black]#W#[fg=dim]#F'
-set-window-option -g window-status-current-format '#[fg=red,bold](#[fg=white,bold]#I#[fg=red,dim]:#[fg=white,bold]#W#[fg=red,bold])'
-
-## Right hand side
-set -g status-right '#[fg=green][#[fg=yellow]%Y-%m-%d #[fg=white]%H:%M#[fg=green]]'
-EOF
-#--- Setup alias
-file=~/.bash_aliases; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/bash.bash_aliases
-([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
-grep -q '^alias tmux' "${file}" 2>/dev/null \
-  || echo -e '## tmux\nalias tmux="tmux attach || tmux new"\n' >> "${file}"    #alias tmux="tmux attach -t $HOST || tmux new -s $HOST"
-#--- Apply new alias
-source "${file}" || source ~/.zshrc
+source "${file}" || source /etc/bash.bashrc
 
 
 ##### Configure screen ~ if possible, use tmux instead!
@@ -477,11 +298,8 @@ select 0
 EOF
 fi
 
-
 ##### Install vim - all users
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}vim${RESET} ~ CLI text editor"
-apt -y -qq install vim \
-  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Configuring ${GREEN}vim${RESET} ~ CLI text editor"
 #--- Configure vim
 file=/etc/vim/vimrc; [ -e "${file}" ] && cp -n $file{,.bkup}   #~/.vimrc
 ([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
@@ -533,9 +351,7 @@ git config --global mergetool.prompt false
 
 
 ##### Install git - all users
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}git${RESET} ~ revision control"
-apt -y -qq install git \
-  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Configuring ${GREEN}git${RESET} ~ revision control"
 #--- Set as default editor
 git config --global core.editor "vim"
 #--- Set as default mergetool
@@ -546,9 +362,8 @@ git config --global mergetool.prompt false
 git config --global push.default simple
 
 
-
 ##### Install metasploit ~ http://docs.kali.org/general-use/starting-metasploit-framework-in-kali
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}metasploit${RESET} ~ exploit framework"
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Configuring ${GREEN}metasploit${RESET} ~ exploit framework"
 apt -y -qq install metasploit-framework \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 mkdir -p ~/.msf4/modules/{auxiliary,exploits,payloads,post}/
@@ -593,52 +408,19 @@ setg EnableStageEncoding true
 setg LHOST 0.0.0.0
 setg LPORT 443
 EOF
-#use exploit/multi/handler
-#setg AutoRunScript 'multi_console_command -rc "~/.msf4/msf_autorunscript.rc"'
-#set PAYLOAD windows/meterpreter/reverse_https
 fi
 #--- Aliases time
-file=~/.bash_aliases; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/bash.bash_aliases
+file=/etc/bash.bashrc; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/bash.bash_aliases
 ([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
 #--- Aliases for console
 grep -q '^alias msfc=' "${file}" 2>/dev/null \
   || echo -e 'alias msfc="systemctl start postgresql; msfdb start; msfconsole -q \"\$@\""' >> "${file}"
 grep -q '^alias msfconsole=' "${file}" 2>/dev/null \
   || echo -e 'alias msfconsole="systemctl start postgresql; msfdb start; msfconsole \"\$@\""\n' >> "${file}"
-#--- Aliases to speed up msfvenom (create static output)
-grep -q "^alias msfvenom-list-all" "${file}" 2>/dev/null \
-  || echo "alias msfvenom-list-all='cat ~/.msf4/msfvenom/all'" >> "${file}"
-grep -q "^alias msfvenom-list-nops" "${file}" 2>/dev/null \
-  || echo "alias msfvenom-list-nops='cat ~/.msf4/msfvenom/nops'" >> "${file}"
-grep -q "^alias msfvenom-list-payloads" "${file}" 2>/dev/null \
-  || echo "alias msfvenom-list-payloads='cat ~/.msf4/msfvenom/payloads'" >> "${file}"
-grep -q "^alias msfvenom-list-encoders" "${file}" 2>/dev/null \
-  || echo "alias msfvenom-list-encoders='cat ~/.msf4/msfvenom/encoders'" >> "${file}"
-grep -q "^alias msfvenom-list-formats" "${file}" 2>/dev/null \
-  || echo "alias msfvenom-list-formats='cat ~/.msf4/msfvenom/formats'" >> "${file}"
-grep -q "^alias msfvenom-list-generate" "${file}" 2>/dev/null \
-  || echo "alias msfvenom-list-generate='_msfvenom-list-generate'" >> "${file}"
-grep -q "^function _msfvenom-list-generate" "${file}" 2>/dev/null \
-  || cat <<EOF >> "${file}" \
-    || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
-function _msfvenom-list-generate {
-  mkdir -p ~/.msf4/msfvenom/
-  msfvenom --list > ~/.msf4/msfvenom/all
-  msfvenom --list nops > ~/.msf4/msfvenom/nops
-  msfvenom --list payloads > ~/.msf4/msfvenom/payloads
-  msfvenom --list encoders > ~/.msf4/msfvenom/encoders
-  msfvenom --help-formats 2> ~/.msf4/msfvenom/formats
-}
-EOF
 #--- Apply new aliases
-source "${file}" || source ~/.zshrc
-#--- Generate (Can't call alias)
-mkdir -p ~/.msf4/msfvenom/
-msfvenom --list > ~/.msf4/msfvenom/all
-msfvenom --list nops > ~/.msf4/msfvenom/nops
-msfvenom --list payloads > ~/.msf4/msfvenom/payloads
-msfvenom --list encoders > ~/.msf4/msfvenom/encoders
-msfvenom --help-formats 2> ~/.msf4/msfvenom/formats
+source "${file}" || source /etc/bash.bashrc
+
+
 #--- First time run with Metasploit
 (( STAGE++ )); echo -e " ${GREEN}[i]${RESET} (${STAGE}/${TOTAL}) ${GREEN}Starting Metasploit for the first time${RESET} ~ this ${BOLD}will take a ~350 seconds${RESET} (~6 mintues)"
 echo "Started at: $(date)"
@@ -649,10 +431,18 @@ msfconsole -q -x 'version;db_status;sleep 310;exit'
 apt-get install --fix-broken
 
 ##### Install xrdp
-#(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}zip${RESET} & ${GREEN}xrdp${RESET} ~ RDP support"
-#apt -y -qq install xrdp 
-#systemctl restart xrdp \
-#  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}zip${RESET} & ${GREEN}xrdp${RESET} ~ RDP support"
+apt -y -qq install xrdp 
+sudo bash -c "cat >/etc/polkit-1/localauthority/50-local.d/45-allow.colord.pkla" <<EOF
+[Allow Colord all Users]
+Identity=unix-user:*
+Action=org.freedesktop.color-manager.create-device;org.freedesktop.color-manager.create-profile;org.freedesktop.color-manager.delete-device;org.freedesktop.color-manager.delete-profile;org.freedesktop.color-manager.modify-device;org.freedesktop.color-manager.modify-profile
+ResultAny=no
+ResultInactive=no
+ResultActive=yes
+EOF
+systemctl restart xrdp \
+  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 
 ####Install doubletap
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Doubletap${RESET} ~ Vuln scanner"
@@ -661,8 +451,9 @@ pushd /opt/doubletap-git/ >/dev/null
 #--- Add to path
 mkdir -p /usr/local/bin/
 file=/usr/local/bin/doubletap-git
-pip install pyrebase
-python3 -m pip install netifaces
+apt -y -qq install python3-pip
+pip3 install pyrebase
+pip3 install netifaces
 nmap --script-updatedb
 cat <<EOF > "${file}" \
   || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
@@ -674,7 +465,6 @@ chmod +x "${file}"
 ####Install discover
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Discover${RESET} ~ OSINT scanner"
 git clone -q -b master https://github.com/leebaird/discover /opt/discover-git/
-./opt/discover-git/update.sh 
 pushd /opt/discover-git/ >/dev/null
 #--- Add to path
 mkdir -p /usr/local/bin/
@@ -706,7 +496,7 @@ apt -y -qq install zip unzip \
 
 ##### Install VPN support
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}VPN${RESET} support for Network-Manager"
-for FILE in network-manager-openvpn network-manager-pptp network-manager-vpnc network-manager-openconnect network-manager-iodine; do
+for FILE in network-manager-openvpn network-manager-pptp network-manager-vpnc network-manager-openconnect; do
   apt -y -qq install "${FILE}" \
     || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 done
@@ -779,7 +569,7 @@ file=~/.bash_aliases; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/bash.bash_
 grep -q '^## ssh' "${file}" 2>/dev/null \
   || echo -e '## ssh\nalias ssh-start="systemctl restart ssh"\nalias ssh-stop="systemctl stop ssh"\n' >> "${file}"
 #--- Apply new alias
-source "${file}" || source ~/.zshrc
+source "${file}" || source ~/etc/bash/bash.rc
 
 ##### Custom insert point
 
@@ -789,7 +579,7 @@ source "${file}" || source ~/.zshrc
 for FILE in clean autoremove; do apt -y -qq "${FILE}"; done
 apt -y -qq purge $(dpkg -l | tail -n +6 | egrep -v '^(h|i)i' | awk '{print $2}')   # Purged packages
 #--- Update slocate database
-updatedb
+sudo updatedb
 #--- Reset folder location
 cd ~/ &>/dev/null
 #--- Remove any history files (as they could contain sensitive info)
@@ -798,6 +588,9 @@ for i in $(cut -d: -f6 /etc/passwd | sort -u); do
   [ -e "${i}" ] && find "${i}" -type f -name '.*_history' -delete
 done
 
+##### updatedb
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Updating ${GREEN}locate${RESET} ~ system index"
+updatedb
 
 ##### Time taken
 finish_time=$(date +%s)
