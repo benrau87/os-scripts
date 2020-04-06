@@ -476,7 +476,21 @@ cd /opt/discover-git/ && ./discover.sh "\$@"
 EOF
 chmod +x "${file}"
 
-  
+ ####Install evilwinrm
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Evil-Winrm${RESET} ~ RCE tool"
+sudo gem install winrm winrm-fs stringio
+git clone -q -b master https://github.com/Hackplayers/evil-winrm /opt/evilwinrm-git/
+pushd /opt/evilwinrm-git/ >/dev/null
+#--- Add to path
+mkdir -p /usr/local/bin/
+file=/usr/local/bin/evilwinrm-git
+cat <<EOF > "${file}" \
+  || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
+#!/bin/bash
+cd /opt/evilwinrm-git/ && ruby evil-winrm.rb "\$@"
+EOF
+chmod +x "${file}"
+
 ##### Install Sublime
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}MPC${RESET} ~ Sublime Text"
 wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add - 
