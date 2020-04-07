@@ -510,9 +510,9 @@ chmod +x "${file}"
 
 ##### Install BeRoot
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}BeRoot${RESET} ~ Privesc Tool"
-git cline -q -b master https://github.com/AlessandroZ/BeRoot /opt/BeRoot-git
-wget https://github.com/AlessandroZ/BeRoot/releases/download/1.0.1/beRoot.zip -O /opt/BeRoot-git/Windows/beRoot.zip
-unzip -o /opt/BeRoot-git/Windows/beRoot.zip
+git clone -q -b master https://github.com/AlessandroZ/BeRoot /opt/BeRoot-git
+wget https://github.com/AlessandroZ/BeRoot/releases/download/1.0.1/beRoot.zip -O /tmp/beRoot.zip
+unzip /tmp/beRoot.zip -d /opt/BeRoot-git/Windows
 
 ##### Install Sublime
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}MPC${RESET} ~ Sublime Text"
@@ -520,6 +520,17 @@ wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add
 echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list 
 apt-get update 
 apt-get install sublime-text
+
+##### Install ILSpy
+#wget https://packages.microsoft.com/config/ubuntu/19.10/packages-microsoft-prod.deb -O /tmp/packages-microsoft-prod.deb
+#dpkg -i /tmp/packages-microsoft-prod.deb
+#apt update
+#apt -y install dotnet-sdk-3.1
+#git clone -q -b master https://github.com/icsharpcode/ILSpy /opt/ILSpy-git
+#cd /opt/ILSpy-git
+#git submodule update --init --recursive
+#dotnet build Frontends.sln
+#cd -
 
 ##### Install go
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}go${RESET} ~ programming language"
