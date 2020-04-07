@@ -364,7 +364,7 @@ git config --global push.default simple
 
 ##### Install metasploit ~ http://docs.kali.org/general-use/starting-metasploit-framework-in-kali
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Configuring ${GREEN}metasploit${RESET} ~ exploit framework"
-apt -y -qq install python-pip metasploit-framework \
+apt -y -qq install metasploit-framework \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 mkdir -p ~/.msf4/modules/{auxiliary,exploits,payloads,post}/
 systemctl stop postgresql
@@ -488,6 +488,23 @@ cat <<EOF > "${file}" \
   || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
 #!/bin/bash
 cd /opt/evilwinrm-git/ && ruby evil-winrm.rb "\$@"
+EOF
+chmod +x "${file}"
+
+ ####Install windapsearch
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Windapsearch${RESET} ~ LDAP scanning framework"
+git clone -q https://github.com/ropnop/windapsearch /opt/windapsearch-git
+pushd /opt/windapsearch-git/ >/dev/null
+sudo apt -y install python-pip libsasl2-dev python-dev libldap2-dev libssl-dev
+sudo pip3 install python-ldap
+#pip install -r /opt/windapsearch-git/requirements.git
+#--- Add to path
+mkdir -p /usr/local/bin/
+file=/usr/local/bin/windapsearch-git
+cat <<EOF > "${file}" \
+  || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
+#!/bin/bash
+cd /opt/windapsearch-git/ && python3 windapsearch.py "\$@"
 EOF
 chmod +x "${file}"
 
