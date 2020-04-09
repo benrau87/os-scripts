@@ -491,6 +491,21 @@ cd /opt/evilwinrm-git/ && ruby evil-winrm.rb "\$@"
 EOF
 chmod +x "${file}"
 
+ ####Install gdb-peda
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}gdb-peda${RESET} ~ Exploit Dev tool"
+git -q -b master clone https://github.com/longld/peda.git -o /opt/peda-git
+pushd /opt/peda-git/ >/dev/null
+#--- Add to path
+mkdir -p /usr/local/bin/
+file=/usr/local/bin/peda-git
+cat <<EOF > "${file}" \
+  || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
+#!/bin/bash
+echo "source /opt/peda-git/peda.py" > ~/.gdbinit
+exec gdb "\$@"
+EOF
+chmod +x "${file}"
+
  ####Install windapsearch
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Windapsearch${RESET} ~ LDAP scanning framework"
 git clone -q https://github.com/ropnop/windapsearch /opt/windapsearch-git
@@ -554,7 +569,6 @@ done
 apt -y -qq install wafw00f \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 
-
 ##### Install WINE
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}WINE${RESET} ~ run Windows programs on *nix"
 apt -y -qq install wine winetricks \
@@ -574,18 +588,15 @@ file=~/.local/share/applications/mimeapps.list; [ -e "${file}" ] && cp -n $file{
 ([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
 echo -e 'application/x-ms-dos-executable=wine.desktop' >> "${file}"
 
-
 ##### Install Empire
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Empire${RESET} ~ PowerShell post-exploitation"
 apt -y -qq install powershell-empire \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 
-
 ##### Preparing a jail ~ http://allanfeid.com/content/creating-chroot-jail-ssh-access // http://www.cyberciti.biz/files/lighttpd/l2chroot.txt
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Preparing up a ${GREEN}jail${RESET} ~ testing environment"
 apt -y -qq install debootstrap curl \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-
 
 ##### Setup SSH
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Setting up ${GREEN}SSH${RESET} ~ CLI access"
