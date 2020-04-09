@@ -451,7 +451,7 @@ pushd /opt/doubletap-git/ >/dev/null
 #--- Add to path
 mkdir -p /usr/local/bin/
 file=/usr/local/bin/doubletap-git
-apt -y -qq install python3-pip
+apt -y -qq install python3-pip gobuster
 pip3 install pyrebase
 pip3 install netifaces
 nmap --script-updatedb
