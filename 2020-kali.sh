@@ -493,7 +493,7 @@ chmod +x "${file}"
 
  ####Install gdb-peda
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}gdb-peda${RESET} ~ Exploit Dev tool"
-git -q -b master clone https://github.com/longld/peda.git -o /opt/peda-git
+git clone -q -b master https://github.com/longld/peda.git /opt/peda-git
 pushd /opt/peda-git/ >/dev/null
 #--- Add to path
 mkdir -p /usr/local/bin/
