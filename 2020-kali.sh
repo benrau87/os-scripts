@@ -495,6 +495,7 @@ chmod +x "${file}"
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}gdb-peda${RESET} ~ Exploit Dev tool"
 git clone -q -b master https://github.com/longld/peda.git /opt/peda-git
 pushd /opt/peda-git/ >/dev/null
+apt -y install ltrace
 #--- Add to path
 mkdir -p /usr/local/bin/
 file=/usr/local/bin/peda-git
