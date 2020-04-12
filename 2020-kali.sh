@@ -497,6 +497,10 @@ git clone -q -b master https://github.com/longld/peda.git /opt/peda-git
 pushd /opt/peda-git/ >/dev/null
 pip3 install pwntools
 apt -y install ltrace
+git clone https://github.com/mirrorer/afl /tmp/afl
+cd /tmp/afl
+make && sudo make install
+cd -
 #--- Add to path
 mkdir -p /usr/local/bin/
 file=/usr/local/bin/peda-git
