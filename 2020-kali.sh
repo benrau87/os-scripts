@@ -491,6 +491,26 @@ cd /opt/evilwinrm-git/ && ruby evil-winrm.rb "\$@"
 EOF
 chmod +x "${file}"
 
+ ####Install ghidra
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Ghidra${RESET} ~ NSA backdoor to your machine tool"
+cd /tmp
+wget https://www.ghidra-sre.org/ghidra_9.1.2_PUBLIC_20200212.zip 
+unzip ghidra_* 
+rm ghidra_*.zip
+mv ghidra_* ghidra
+mv ghidra /opt/ghidra
+pushd /opt/ghidra/ >/dev/null
+echo 'JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64/bin/"' >> /etc/bash.bashrc
+#--- Add to path
+mkdir -p /usr/local/bin/
+file=/usr/local/bin/ghidra
+cat <<EOF > "${file}" \
+  || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
+#!/bin/bash
+cd /opt/ghidra/ && ./ghidraRun
+EOF
+chmod +x "${file}"
+
  ####Install gdb-peda
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}gdb-peda${RESET} ~ Exploit Dev tool"
 git clone -q -b master https://github.com/longld/peda.git /opt/peda-git
