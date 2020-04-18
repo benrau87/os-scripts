@@ -578,6 +578,11 @@ apt-get install sublime-text
 apt -y -qq install golang \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 
+##### Install bettercap
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}bettercap${RESET} ~ the better etter"
+apt -y -qq install bettercap \
+  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
+
 ##### Install zip & unzip
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}zip${RESET} & ${GREEN}unzip${RESET} ~ CLI file extractors"
 apt -y -qq install zip unzip \
