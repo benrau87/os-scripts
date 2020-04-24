@@ -476,6 +476,18 @@ cd /opt/discover-git/ && ./discover.sh "\$@"
 EOF
 chmod +x "${file}"
 
+####Install unicorn-magic
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Unicorn${RESET} ~ Shellcode creator"
+#--- Add to path
+mkdir -p /usr/local/bin/
+file=/usr/local/bin/unicorn-magic
+cat <<EOF > "${file}" \
+  || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
+#!/bin/bash
+cd /usr/share/unicorn-magic/ && python unicorn.py "\$@"
+EOF
+chmod +x "${file}"
+
  ####Install evilwinrm
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Evil-Winrm${RESET} ~ RCE tool"
 sudo gem install winrm winrm-fs stringio
