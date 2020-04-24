@@ -581,7 +581,7 @@ file=/usr/local/bin/covenant-git
 cat <<EOF > "${file}" \
   || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
 #!/bin/bash
-cd /opt/covenant-git && dotnet run &
+cd /opt/covenant-git/Covenant && dotnet run &
 EOF
 chmod +x "${file}"
 
