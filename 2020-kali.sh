@@ -548,8 +548,7 @@ chmod +x "${file}"
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Windapsearch${RESET} ~ LDAP scanning framework"
 git clone -q https://github.com/ropnop/windapsearch /opt/windapsearch-git
 pushd /opt/windapsearch-git/ >/dev/null
-sudo apt -y install python-pip libsasl2-dev python-dev libldap2-dev libssl-dev
-sudo pip3 install python-ldap
+sudo apt -y install python-pip python3-ldap libsasl2-dev python-dev libldap2-dev libssl-dev
 #pip install -r /opt/windapsearch-git/requirements.git
 #--- Add to path
 mkdir -p /usr/local/bin/
@@ -560,6 +559,32 @@ cat <<EOF > "${file}" \
 cd /opt/windapsearch-git/ && python3 windapsearch.py "\$@"
 EOF
 chmod +x "${file}"
+
+ ####Install Covenant
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Covenant${RESET} ~ Postexec framework"
+cd /tmp
+mkdir /opt/dotnet
+wget https://dotnet.microsoft.com/download/dotnet-core/scripts/v1/dotnet-install.sh
+chmod +x dotnet-install.sh
+./dotnet-install.sh -v 2.2.207 --install-dir /opt/dotnet
+#--- Add to path
+echo 'DOTNET_ROOT="/opt/dotnet"' >> /etc/bash.bashrc
+echo 'PATH=$PATH:"/opt/dotnet"' >> /etc/bash.bashrc
+source /etc/bash.bashrc
+cd -
+git clone --recurse-submodules https://github.com/cobbr/Covenant /opt/covenant-git
+cd /opt/covenant-git 
+dotnet build
+cd -
+mkdir -p /usr/local/bin/
+file=/usr/local/bin/covenant-git
+cat <<EOF > "${file}" \
+  || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
+#!/bin/bash
+cd /opt/covenant-git && dotnet run &
+EOF
+chmod +x "${file}"
+
 
 ##### Install BeRoot
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}BeRoot${RESET} ~ Privesc Tool"
