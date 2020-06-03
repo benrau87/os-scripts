@@ -435,7 +435,7 @@ apt-get install --fix-broken
 
 ##### Install xrdp
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}zip${RESET} & ${GREEN}xrdp${RESET} ~ RDP support"
-apt -y -qq install xrdp 
+apt -y -qq install xrdp=0.9.12-1
 sudo bash -c "cat >/etc/polkit-1/localauthority/50-local.d/45-allow.colord.pkla" <<EOF
 [Allow Colord all Users]
 Identity=unix-user:*
