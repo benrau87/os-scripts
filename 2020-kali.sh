@@ -55,7 +55,7 @@ if [[ "$?" -ne 0 ]]; then
   exit 1
 fi
 #--- Upgrade
-apt -qq -y upgrade
+apt -qq -y DEBIAN_FRONTEND=noninteractive upgrade
 if [[ "$?" -ne 0 ]]; then
   echo -e ' '${RED}'[!]'${RESET}" There was an ${RED}issue accessing network repositories${RESET}" 1>&2
   echo -e " ${YELLOW}[i]${RESET} Are the remote network repositories ${YELLOW}currently being sync'd${RESET}?"
@@ -720,7 +720,7 @@ done
 
 ##### updatedb
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Updating ${GREEN}locate${RESET} ~ system index"
-updatedb
+sudo updatedb
 
 ##### Time taken
 finish_time=$(date +%s)
