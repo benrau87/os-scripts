@@ -369,7 +369,7 @@ git config --global push.default simple
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Configuring ${GREEN}metasploit${RESET} ~ exploit framework"
 apt -y -qq install metasploit-framework \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-mkdir -p ~/.msf4/modules/{auxiliary,exploits,payloads,post}/
+#mkdir -p ~/.msf4/modules/{auxiliary,exploits,payloads,post}/
 systemctl stop postgresql
 systemctl start postgresql
 msfdb reinit
@@ -395,19 +395,19 @@ if [[ -f "${file}" ]]; then
   echo -e ' '${RED}'[!]'${RESET}" ${file} detected. Skipping..." 1>&2
 else
   cat <<EOF > "${file}"
-load auto_add_route
+#load auto_add_route
 
-load alias
-alias del rm
+#load alias
+#alias del rm
 alias handler use exploit/multi/handler
 
-load sounds
+#load sounds
 
 setg TimestampOutput true
 setg VERBOSE true
 
 setg ExitOnSession false
-setg EnableStageEncoding true
+#setg EnableStageEncoding true
 setg LHOST 0.0.0.0
 setg LPORT 443
 EOF
