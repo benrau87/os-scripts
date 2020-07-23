@@ -399,7 +399,7 @@ else
 
 #load alias
 #alias del rm
-alias handler use exploit/multi/handler
+#alias handler use exploit/multi/handler
 
 #load sounds
 
