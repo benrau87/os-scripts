@@ -37,10 +37,10 @@ file=/etc/apt/sources.list; [ -e "${file}" ] && cp -n $file{,.bkup}
 ([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
 #--- Main
 grep -q '^deb .* kali-rolling' "${file}" 2>/dev/null \
-  || echo -e "\n\n# Kali Rolling\ndeb http://http.kali.org/kali kali-rolling main contrib non-free" >> "${file}"
+  || echo -e "\n\n# Kali Rolling\ndeb https://http.kali.org/kali kali-rolling main contrib non-free" >> "${file}"
 #--- Source
 grep -q '^deb-src .* kali-rolling' "${file}" 2>/dev/null \
-  || echo -e "deb-src http://http.kali.org/kali kali-rolling main contrib non-free" >> "${file}"
+  || echo -e "deb-src https://http.kali.org/kali kali-rolling main contrib non-free" >> "${file}"
 #--- Disable CD repositories
 sed -i '/kali/ s/^\( \|\t\|\)deb cdrom/#deb cdrom/g' "${file}"
 #--- incase we were interrupted
@@ -51,16 +51,16 @@ if [[ "$?" -ne 0 ]]; then
   echo -e ' '${RED}'[!]'${RESET}" There was an ${RED}issue accessing network repositories${RESET}" 1>&2
   echo -e " ${YELLOW}[i]${RESET} Are the remote network repositories ${YELLOW}currently being sync'd${RESET}?"
   echo -e " ${YELLOW}[i]${RESET} Here is ${BOLD}YOUR${RESET} local network ${BOLD}repository${RESET} information (Geo-IP based):\n"
-  curl -sI http://http.kali.org/README
+  curl -sI http://http.kali.org
   exit 1
 fi
 #--- Upgrade
-apt -qq -y DEBIAN_FRONTEND=noninteractive upgrade
+apt -qq -y upgrade
 if [[ "$?" -ne 0 ]]; then
   echo -e ' '${RED}'[!]'${RESET}" There was an ${RED}issue accessing network repositories${RESET}" 1>&2
   echo -e " ${YELLOW}[i]${RESET} Are the remote network repositories ${YELLOW}currently being sync'd${RESET}?"
   echo -e " ${YELLOW}[i]${RESET} Here is ${BOLD}YOUR${RESET} local network ${BOLD}repository${RESET} information (Geo-IP based):\n"
-  curl -sI http://http.kali.org/README
+  curl -sI http://http.kali.org
   exit 1
 fi
 
