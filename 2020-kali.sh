@@ -351,7 +351,7 @@ git config --global mergetool.prompt false
 
 ##### Space for apt packages
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Installing custom ${GREEN}apt${RESET} packages"
-apt -y install bloodhound
+apt -y install bloodhound gdb
 
 ##### Install git - all users
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Configuring ${GREEN}git${RESET} ~ revision control"
@@ -435,7 +435,7 @@ apt-get install --fix-broken
 
 ##### Install xrdp
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}zip${RESET} & ${GREEN}xrdp${RESET} ~ RDP support"
-apt -y -qq install xrdp=0.9.12-1
+apt -y -qq install xrdp
 sudo bash -c "cat >/etc/polkit-1/localauthority/50-local.d/45-allow.colord.pkla" <<EOF
 [Allow Colord all Users]
 Identity=unix-user:*
