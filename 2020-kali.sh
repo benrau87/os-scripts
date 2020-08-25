@@ -450,6 +450,8 @@ systemctl restart xrdp \
 ####Install doubletap
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Doubletap${RESET} ~ Vuln scanner"
 git clone -q -b master https://github.com/benrau87/doubletap /opt/doubletap-git/ 
+cp /opt/doubletap-git/Seatbelt.exe /usr/share/windows-resources/binaries/seatbelt.exe
+chmod +x /usr/share/windows-resources/binaries/seatbelt.exe
 pushd /opt/doubletap-git/ >/dev/null
 #--- Add to path
 mkdir -p /usr/local/bin/
