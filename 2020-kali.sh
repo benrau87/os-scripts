@@ -64,6 +64,14 @@ if [[ "$?" -ne 0 ]]; then
   exit 1
 fi
 
+##### Space for apt packages
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Installing custom ${GREEN}apt${RESET} packages"
+apt -y install bloodhound gdb dbeaver smtp-user-enum
+
+##### Space for apt packages
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Installing custom ${GREEN}github${RESET} repos"
+git clone -q -b master https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite /opt/privesc_scripts
+
 #--- Configuring XFCE (Power Options)
 cat <<EOF > /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-power-manager.xml
   || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
@@ -100,7 +108,6 @@ grep -q "HISTFILESIZE" "${file}" \
 #source "${file}" || source ~/.zshrc
 source "${file}" || source /etc/bash.bashrc
 
-
 ##### Install bash colour - all users
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}bash colour${RESET} ~ colours shell output"
 file=/etc/bash.bashrc; [ -e "${file}" ] && cp -n $file{,.bkup}   #~/.bashrc
@@ -127,8 +134,6 @@ sed -i 's/.*force_color_prompt=.*/force_color_prompt=yes/' "${file}"
 #--- Apply new configs
 #source "${file}" || source ~/.zshrc
 source "${file}" || source /etc/bash.bashrc
-
-
 
 ##### Configure aliases - root user
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Configuring ${GREEN}aliases${RESET} ~ CLI shortcuts"
@@ -279,7 +284,7 @@ startup_message off
 vbell off
 
 ## Keep scrollback n lines
-defscrollback 1000
+defscrollback 10000
 
 ## Hardstatus is a bar of text that is visible in all screens
 hardstatus on
@@ -348,10 +353,6 @@ git config --global core.editor "vim"
 git config --global merge.tool vimdiff
 git config --global merge.conflictstyle diff3
 git config --global mergetool.prompt false
-
-##### Space for apt packages
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Installing custom ${GREEN}apt${RESET} packages"
-apt -y install bloodhound gdb dbeaver smtp-user-enum
 
 ##### Install git - all users
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Configuring ${GREEN}git${RESET} ~ revision control"
