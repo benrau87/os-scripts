@@ -66,7 +66,7 @@ fi
 
 ##### Space for apt packages
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Installing custom ${GREEN}apt${RESET} packages"
-apt -y install bloodhound gdb dbeaver smtp-user-enum
+apt -y install bloodhound gdb dbeaver smtp-user-enum golang
 
 ##### Space for apt packages
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Installing custom ${GREEN}github${RESET} repos"
@@ -630,11 +630,6 @@ apt-get install sublime-text
 #git submodule update --init --recursive
 #dotnet build Frontends.sln
 #cd -
-
-##### Install go
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}go${RESET} ~ programming language"
-apt -y -qq install golang \
-  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 
 ##### Install bettercap
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}bettercap${RESET} ~ the better etter"
