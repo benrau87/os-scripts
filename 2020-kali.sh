@@ -482,6 +482,21 @@ cd /opt/discover-git/ && ./discover.sh "\$@"
 EOF
 chmod +x "${file}"
 
+####Install FFUF
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}ffuf${RESET} ~ Directory scanner"
+git clone -q -b master https://github.com/ffuf/ffuf /opt/ffuf-git/
+go build /opt/ffuf-git
+pushd /opt/ffuf-git/ >/dev/null
+#--- Add to path
+mkdir -p /usr/local/bin/
+file=/usr/local/bin/ffuf-git
+cat <<EOF > "${file}" \
+  || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
+#!/bin/bash
+cd /opt/ffuf-git/ && ./ffuf "\$@"
+EOF
+chmod +x "${file}"
+
 ####Install unicorn-magic
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Unicorn${RESET} ~ Shellcode creator"
 #--- Add to path
