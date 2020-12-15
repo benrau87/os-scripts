@@ -54,6 +54,37 @@ if [[ "$?" -ne 0 ]]; then
   curl -sI http://http.kali.org
   exit 1
 fi
+
+##### Check to see if Kali is in a VM. If so, install "Virtual Machine Addons/Tools" for a "better" virtual experiment
+if (dmidecode | grep -i vmware); then
+  ##### Install virtual machines tools ~ http://docs.kali.org/general-use/install-vmware-tools-kali-guest
+  (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}VMware's (open) virtual machine tools${RESET}"
+  apt -y -qq install open-vm-tools-desktop fuse \
+    || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
+  apt -y -qq install make \
+    || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2    # There's a nags afterwards
+  ## Shared folders support for Open-VM-Tools (some odd bug)
+  file=/usr/local/sbin/mount-shared-folders; [ -e "${file}" ] && cp -n $file{,.bkup}
+  cat <<EOF > "${file}" \
+    || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
+#!/bin/bash
+vmware-hgfsclient | while read folder; do
+  echo "[i] Mounting \${folder}   (/mnt/hgfs/\${folder})"
+  mkdir -p "/mnt/hgfs/\${folder}"
+  umount -f "/mnt/hgfs/\${folder}" 2>/dev/null
+  vmhgfs-fuse -o allow_other -o auto_unmount ".host:/\${folder}" "/mnt/hgfs/\${folder}"
+done
+sleep 2s
+EOF
+  chmod +x "${file}"
+  ln -sf "${file}" /root/Desktop/mount-shared-folders.sh
+elif (dmidecode | grep -i virtualbox); then
+  ##### Installing VirtualBox Guest Additions.   Note: Need VirtualBox 4.2.xx+ for the host (http://docs.kali.org/general-use/kali-linux-virtual-box-guest)
+  (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}VirtualBox's guest additions${RESET}"
+  apt -y -qq install virtualbox-guest-x11 \
+    || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
+fi
+
 #--- Upgrade
 apt -qq -y upgrade
 if [[ "$?" -ne 0 ]]; then
@@ -68,7 +99,7 @@ fi
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Installing custom ${GREEN}apt${RESET} packages"
 apt -y install bloodhound gdb dbeaver smtp-user-enum golang
 
-##### Space for apt packages
+##### Space for git packages
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Installing custom ${GREEN}github${RESET} repos"
 git clone -q -b master https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite /opt/privesc_scripts
 
@@ -91,22 +122,14 @@ EOF
 ##### Configure bash - all users
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Configuring ${GREEN}bash${RESET} ~ CLI shell"
 file=/etc/bash.bashrc; [ -e "${file}" ] && cp -n $file{,.bkup}   #~/.bashrc
-grep -q "cdspell" "${file}" \
-  || echo "shopt -sq cdspell" >> "${file}"             # Spell check 'cd' commands
-grep -q "autocd" "${file}" \
- || echo "shopt -s autocd" >> "${file}"                # So you don't have to 'cd' before a folder
-grep -q "checkwinsize" "${file}" \
- || echo "shopt -sq checkwinsize" >> "${file}"         # Wrap lines correctly after resizing
-grep -q "nocaseglob" "${file}" \
- || echo "shopt -sq nocaseglob" >> "${file}"           # Case insensitive pathname expansion
 grep -q "HISTSIZE" "${file}" \
  || echo "HISTSIZE=10000" >> "${file}"                 # Bash history (memory scroll back)
 grep -q "HISTFILESIZE" "${file}" \
  || echo "HISTFILESIZE=10000" >> "${file}"             # Bash history (file .bash_history)
 
 #--- Apply new configs
-#source "${file}" || source ~/.zshrc
-source "${file}" || source /etc/bash.bashrc
+source "${file}" || source ~/.zshrc
+#source "${file}" || source /etc/bash.bashrc
 
 ##### Install bash colour - all users
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}bash colour${RESET} ~ colours shell output"
@@ -132,8 +155,8 @@ file=/etc/skel/.bashrc   #; [ -e "${file}" ] && cp -n $file{,.bkup}
 sed -i 's/.*force_color_prompt=.*/force_color_prompt=yes/' "${file}"
 
 #--- Apply new configs
-#source "${file}" || source ~/.zshrc
-source "${file}" || source /etc/bash.bashrc
+source "${file}" || source ~/.zshrc
+#source "${file}" || source /etc/bash.bashrc
 
 ##### Configure aliases - root user
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Configuring ${GREEN}aliases${RESET} ~ CLI shortcuts"
@@ -264,8 +287,8 @@ grep -q '^## edb' "${file}" 2>/dev/null \
 grep -q '^## wordlist' "${file}" 2>/dev/null \
   || echo -e '## wordlist\nalias wordlists="cd /usr/share/wordlists/"\n' >> "${file}"
 #--- Apply new aliases
-source "${file}" || source /etc/bash.bashrc
-
+#source "${file}" || source /etc/bash.bashrc
+source "${file}" || source ~/.zshrc
 
 ##### Configure screen ~ if possible, use tmux instead!
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Configuring ${GREEN}screen${RESET} ~ multiplex virtual consoles"
@@ -422,8 +445,8 @@ grep -q '^alias msfc=' "${file}" 2>/dev/null \
 grep -q '^alias msfconsole=' "${file}" 2>/dev/null \
   || echo -e 'alias msfconsole="systemctl start postgresql; msfdb start; msfconsole \"\$@\""\n' >> "${file}"
 #--- Apply new aliases
-source "${file}" || source /etc/bash.bashrc
-
+#source "${file}" || source /etc/bash.bashrc
+source "${file}" || source ~/.zshrc
 
 #--- First time run with Metasploit
 (( STAGE++ )); echo -e " ${GREEN}[i]${RESET} (${STAGE}/${TOTAL}) ${GREEN}Starting Metasploit for the first time${RESET} ~ this ${BOLD}will take a ~350 seconds${RESET} (~6 mintues)"
