@@ -459,15 +459,19 @@ apt-get install --fix-broken
 
 ##### Install xrdp
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}zip${RESET} & ${GREEN}xrdp${RESET} ~ RDP support"
-apt -y -qq install xrdp
-sudo bash -c "cat >/etc/polkit-1/localauthority/50-local.d/45-allow.colord.pkla" <<EOF
-[Allow Colord all Users]
-Identity=unix-user:*
-Action=org.freedesktop.color-manager.create-device;org.freedesktop.color-manager.create-profile;org.freedesktop.color-manager.delete-device;org.freedesktop.color-manager.delete-profile;org.freedesktop.color-manager.modify-device;org.freedesktop.color-manager.modify-profile
-ResultAny=no
-ResultInactive=no
-ResultActive=yes
-EOF
+apt -y -qq install xrdp xorg
+wget https://gitlab.com/kalilinux/build-scripts/kali-wsl-chroot/-/raw/master/xfce4.sh
+chmod +x xfce4.sh
+./xfce4.sh
+#sudo bash -c "cat >/etc/polkit-1/localauthority/50-local.d/45-allow.colord.pkla" <<EOF
+#[Allow Colord all Users]
+#Identity=unix-user:*
+#Action=org.freedesktop.color-manager.create-device;org.freedesktop.color-manager.create-profile;org.freedesktop.color-manager.delete-device;org.freedesktop.color-manager.delete-profile;org.freedesktop.color-manager.modify-device;org.freedesktop.color-manager.modify-profile
+#ResultAny=no
+#ResultInactive=no
+#ResultActive=yes
+#EOF
+systemctl enable xrdp
 systemctl restart xrdp \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 
