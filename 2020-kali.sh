@@ -441,9 +441,9 @@ file=/etc/zsh/zshrc; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/bash.bash_a
 ([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
 #--- Aliases for console
 grep -q '^alias msfc=' "${file}" 2>/dev/null \
-  || echo -e 'alias msfc="systemctl start postgresql; msfdb start; msfconsole -q \"\$@\""' >> "${file}"
+  || echo -e 'alias msfc="systemctl start postgresql; msfdb start; sudo msfconsole -q \"\$@\""' >> "${file}"
 grep -q '^alias msfconsole=' "${file}" 2>/dev/null \
-  || echo -e 'alias msfconsole="systemctl start postgresql; msfdb start; msfconsole \"\$@\""\n' >> "${file}"
+  || echo -e 'alias msfconsole="systemctl start postgresql; msfdb start; sudo msfconsole \"\$@\""\n' >> "${file}"
 #--- Apply new aliases
 source "${file}" || source /etc/zsh/zshrc
 
