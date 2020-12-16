@@ -3,6 +3,8 @@
 Personal collection of Operating System (OS) scripts _(and related things)_.
 Installs and configures:
 
+zsh aliases
+
 ghidra
 
 covenant
@@ -19,11 +21,7 @@ empire
 and others
 - - -
 
-## Kali Rolling
-
-Kali Rolling (2016.1) _(Debian Testing)_
-![](https://i.imgur.com/23dGQEa.png)
-_Left: tweaked GNOME 3.18,  Right: custom XFCE 4.12.  Both running conky._
+## Kali Rolling 2020.4 Tested
 
 - - -
 
