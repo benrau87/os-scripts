@@ -97,9 +97,9 @@ fi
 
 ##### Space for apt packages
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Installing custom ${GREEN}apt${RESET} packages"
-apt -y install bloodhound gdb dbeaver smtp-user-enum golang
+apt -y install bloodhound gdb dbeaver smtp-user-enum golang dnsutils
 
-##### Space for apt packages
+##### Space for git packages
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Installing custom ${GREEN}github${RESET} repos"
 git clone -q -b master https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite /opt/privesc_scripts
 
