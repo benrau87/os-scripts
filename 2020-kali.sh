@@ -508,7 +508,7 @@ chmod +x "${file}"
 
 ####Install FFUF
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}ffuf${RESET} ~ Directory scanner"
-git clone -q -b master https://github.com/ffuf/ffuf /opt/ffuf-git/
+git clone -q -b master https://github.com/ffuf/ffuf /opt/fuff-git/
 go build /opt/ffuf-git
 pushd /opt/ffuf-git/ >/dev/null
 #--- Add to path
