@@ -99,7 +99,7 @@ fi
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Installing custom ${GREEN}apt${RESET} packages"
 apt -y install bloodhound gdb dbeaver smtp-user-enum golang
 
-##### Space for git packages
+##### Space for apt packages
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Installing custom ${GREEN}github${RESET} repos"
 git clone -q -b master https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite /opt/privesc_scripts
 
@@ -121,7 +121,7 @@ EOF
 
 ##### Configure bash - all users
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Configuring ${GREEN}bash${RESET} ~ CLI shell"
-file=/etc/bash.bashrc; [ -e "${file}" ] && cp -n $file{,.bkup}   #~/.bashrc
+file=/etc/zsh/zshrc; [ -e "${file}" ] && cp -n $file{,.bkup}   #~/.bashrc
 grep -q "HISTSIZE" "${file}" \
  || echo "HISTSIZE=10000" >> "${file}"                 # Bash history (memory scroll back)
 grep -q "HISTFILESIZE" "${file}" \
@@ -129,11 +129,11 @@ grep -q "HISTFILESIZE" "${file}" \
 
 #--- Apply new configs
 source "${file}" || source ~/.zshrc
-#source "${file}" || source /etc/bash.bashrc
+#source "${file}" || source /etc/zsh/zshrc
 
 ##### Install bash colour - all users
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}bash colour${RESET} ~ colours shell output"
-file=/etc/bash.bashrc; [ -e "${file}" ] && cp -n $file{,.bkup}   #~/.bashrc
+file=/etc/zsh/zshrc; [ -e "${file}" ] && cp -n $file{,.bkup}   #~/.bashrc
 ([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
 sed -i 's/.*force_color_prompt=.*/force_color_prompt=yes/' "${file}"
 grep -q '^force_color_prompt' "${file}" 2>/dev/null \
@@ -155,13 +155,13 @@ file=/etc/skel/.bashrc   #; [ -e "${file}" ] && cp -n $file{,.bkup}
 sed -i 's/.*force_color_prompt=.*/force_color_prompt=yes/' "${file}"
 
 #--- Apply new configs
-source "${file}" || source ~/.zshrc
-#source "${file}" || source /etc/bash.bashrc
+#source "${file}" || source ~/.zshrc
+source "${file}" || source /etc/zsh/zshrc
 
 ##### Configure aliases - root user
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Configuring ${GREEN}aliases${RESET} ~ CLI shortcuts"
 #--- Enable defaults - root user
-for FILE in /etc/bash.bashrc ~/.bashrc ~/.bash_aliases; do    #/etc/profile /etc/bashrc /etc/bash_aliases /etc/bash.bash_aliases
+for FILE in /etc/zsh/zshrc ~/.bashrc ~/.bash_aliases; do    #/etc/profile /etc/bashrc /etc/bash_aliases /etc/bash.bash_aliases
   [[ ! -f "${FILE}" ]] \
     && continue
   cp -n $FILE{,.bkup}
@@ -173,8 +173,8 @@ echo "set completion-ignore-case on" >> /etc/inputrc
 echo "set show-all-if-ambiguous on" >> /etc/inputrc
 
 #--- General system ones
-touch /etc/bash.bashrc
-file=/etc/bash.bashrc; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/bash.bash_aliases
+touch /etc/zsh/zshrc
+file=/etc/zsh/zshrc; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/bash.bash_aliases
 ([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
 grep -q '^## grep aliases' "${file}" 2>/dev/null \
   || echo -e '## grep aliases\nalias grep="grep --color=always"\nalias ngrep="grep -n"\n' >> "${file}"
@@ -287,8 +287,8 @@ grep -q '^## edb' "${file}" 2>/dev/null \
 grep -q '^## wordlist' "${file}" 2>/dev/null \
   || echo -e '## wordlist\nalias wordlists="cd /usr/share/wordlists/"\n' >> "${file}"
 #--- Apply new aliases
-#source "${file}" || source /etc/bash.bashrc
-source "${file}" || source ~/.zshrc
+source "${file}" || source /etc/zsh/zshrc
+
 
 ##### Configure screen ~ if possible, use tmux instead!
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Configuring ${GREEN}screen${RESET} ~ multiplex virtual consoles"
@@ -367,7 +367,7 @@ grep -q '^:command Q q' "${file}" 2>/dev/null \
   || echo -e ':command Q q' >> "${file}"                                                                 # Fix stupid typo I always make
 #--- Set as default editor
 export EDITOR="vim"   #update-alternatives --config editor
-file=/etc/bash.bashrc; [ -e "${file}" ] && cp -n $file{,.bkup}
+file=/etc/zsh/zshrc; [ -e "${file}" ] && cp -n $file{,.bkup}
 ([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
 grep -q '^EDITOR' "${file}" 2>/dev/null \
   || echo 'EDITOR="vim"' >> "${file}"
@@ -437,7 +437,7 @@ setg LPORT 443
 EOF
 fi
 #--- Aliases time
-file=/etc/bash.bashrc; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/bash.bash_aliases
+file=/etc/zsh/zshrc; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/bash.bash_aliases
 ([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
 #--- Aliases for console
 grep -q '^alias msfc=' "${file}" 2>/dev/null \
@@ -445,8 +445,8 @@ grep -q '^alias msfc=' "${file}" 2>/dev/null \
 grep -q '^alias msfconsole=' "${file}" 2>/dev/null \
   || echo -e 'alias msfconsole="systemctl start postgresql; msfdb start; msfconsole \"\$@\""\n' >> "${file}"
 #--- Apply new aliases
-#source "${file}" || source /etc/bash.bashrc
-source "${file}" || source ~/.zshrc
+source "${file}" || source /etc/zsh/zshrc
+
 
 #--- First time run with Metasploit
 (( STAGE++ )); echo -e " ${GREEN}[i]${RESET} (${STAGE}/${TOTAL}) ${GREEN}Starting Metasploit for the first time${RESET} ~ this ${BOLD}will take a ~350 seconds${RESET} (~6 mintues)"
@@ -556,7 +556,7 @@ rm ghidra_*.zip
 mv ghidra_* ghidra
 mv ghidra /opt/ghidra
 pushd /opt/ghidra/ >/dev/null
-echo 'JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64/bin/"' >> /etc/bash.bashrc
+echo 'JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64/bin/"' >> /etc/zsh/zshrc
 #--- Add to path
 mkdir -p /usr/local/bin/
 file=/usr/local/bin/ghidra
@@ -612,9 +612,9 @@ wget https://dotnet.microsoft.com/download/dotnet-core/scripts/v1/dotnet-install
 chmod +x dotnet-install.sh
 ./dotnet-install.sh -v 2.2.207 --install-dir /opt/dotnet
 #--- Add to path
-echo 'DOTNET_ROOT="/opt/dotnet"' >> /etc/bash.bashrc
-echo 'PATH=$PATH:"/opt/dotnet"' >> /etc/bash.bashrc
-source /etc/bash.bashrc
+echo 'DOTNET_ROOT="/opt/dotnet"' >> /etc/zsh/zshrc
+echo 'PATH=$PATH:"/opt/dotnet"' >> /etc/zsh/zshrc
+source /etc/zsh/zshrc
 cd -
 git clone --recurse-submodules https://github.com/cobbr/Covenant /opt/covenant-git
 cd /opt/covenant-git 
