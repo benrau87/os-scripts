@@ -248,7 +248,7 @@ grep -q '^## Listing' "${file}" 2>/dev/null \
   || echo -e '### Listing\nalias ll="ls -l --block-size=1 --color=auto"\n' >> "${file}"
 #--- Add in tools
 grep -q '^## nmap' "${file}" 2>/dev/null \
-  || echo -e '## nmap\nalias nmap="nmap --reason --open --stats-every 3m --max-retries 1 --max-scan-delay 20 --defeat-rst-ratelimit"\n' >> "${file}"
+  || echo -e '## nmap\nalias nmap="nmap -sV -Pn --reason --open --stats-every 3m --max-retries 1 --max-scan-delay 20 --defeat-rst-ratelimit"\n' >> "${file}"
 grep -q '^## aircrack-ng' "${file}" 2>/dev/null \
   || echo -e '## aircrack-ng\nalias aircrack-ng="aircrack-ng -z"\n' >> "${file}"
 grep -q '^## airodump-ng' "${file}" 2>/dev/null \
