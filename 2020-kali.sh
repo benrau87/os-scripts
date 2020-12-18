@@ -127,6 +127,14 @@ grep -q "HISTSIZE" "${file}" \
 grep -q "HISTFILESIZE" "${file}" \
  || echo "HISTFILESIZE=10000" >> "${file}"             # Bash history (file .bash_history)
 
+##### Configure bash - all users
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Configuring ${GREEN}bash${RESET} ~ CLI shell"
+file=~/.zshrc; [ -e "${file}" ] && cp -n $file{,.bkup}   #~/.bashrc
+grep -q "HISTSIZE" "${file}" \
+ || echo "HISTSIZE=100000" >> "${file}"                 # Bash history (memory scroll back)
+grep -q "HISTFILESIZE" "${file}" \
+ || echo "HISTFILESIZE=100000" >> "${file}"             # Bash history (file .bash_history)
+
 #--- Apply new configs
 source "${file}" || source ~/.zshrc
 #source "${file}" || source /etc/zsh/zshrc
