@@ -13,12 +13,11 @@ RESET="\033[00m"       # Normal
 STAGE=0                                                         # Where are we up to
 TOTAL=$( grep '(${STAGE}/${TOTAL})' $0 | wc -l );(( TOTAL-- ))  # How many things have we got todo
 
-
+start_time=$(date +%s)
 #-Arguments------------------------------------------------------------#
 
 
 #-Start----------------------------------------------------------------#
-
 
 ##### Check if we are running as root - else this script will fail (hard!)
 if [[ "${EUID}" -ne 0 ]]; then
@@ -45,8 +44,26 @@ grep -q '^deb-src .* kali-rolling' "${file}" 2>/dev/null \
 sed -i '/kali/ s/^\( \|\t\|\)deb cdrom/#deb cdrom/g' "${file}"
 #--- incase we were interrupted
 dpkg --configure -a
+#--- Custom repos
+wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.asc.gpg
+sudo mv microsoft.asc.gpg /etc/apt/trusted.gpg.d/
+wget -q https://packages.microsoft.com/config/ubuntu/18.04/prod.list 
+sudo mv prod.list /etc/apt/sources.list.d/microsoft-prod.list
+sudo chown root:root /etc/apt/trusted.gpg.d/microsoft.asc.gpg
+sudo chown root:root /etc/apt/sources.list.d/microsoft-prod.list
+wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add - 
+echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list 
 #--- Update
 apt -qq update
+if [[ "$?" -ne 0 ]]; then
+  echo -e ' '${RED}'[!]'${RESET}" There was an ${RED}issue accessing network repositories${RESET}" 1>&2
+  echo -e " ${YELLOW}[i]${RESET} Are the remote network repositories ${YELLOW}currently being sync'd${RESET}?"
+  echo -e " ${YELLOW}[i]${RESET} Here is ${BOLD}YOUR${RESET} local network ${BOLD}repository${RESET} information (Geo-IP based):\n"
+  curl -sI http://http.kali.org
+  exit 1
+fi
+#--- Upgrade
+apt -qq -y upgrade
 if [[ "$?" -ne 0 ]]; then
   echo -e ' '${RED}'[!]'${RESET}" There was an ${RED}issue accessing network repositories${RESET}" 1>&2
   echo -e " ${YELLOW}[i]${RESET} Are the remote network repositories ${YELLOW}currently being sync'd${RESET}?"
@@ -85,23 +102,22 @@ elif (dmidecode | grep -i virtualbox); then
     || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 fi
 
-#--- Upgrade
-apt -qq -y upgrade
-if [[ "$?" -ne 0 ]]; then
-  echo -e ' '${RED}'[!]'${RESET}" There was an ${RED}issue accessing network repositories${RESET}" 1>&2
-  echo -e " ${YELLOW}[i]${RESET} Are the remote network repositories ${YELLOW}currently being sync'd${RESET}?"
-  echo -e " ${YELLOW}[i]${RESET} Here is ${BOLD}YOUR${RESET} local network ${BOLD}repository${RESET} information (Geo-IP based):\n"
-  curl -sI http://http.kali.org
-  exit 1
-fi
+#-Custom Packages Start----------------------------------------------------------------#
 
 ##### Space for apt packages
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Installing custom ${GREEN}apt${RESET} packages"
-apt -y install bloodhound gdb dbeaver smtp-user-enum golang dnsutils azure-cli
+apt -y install bloodhound gdb dbeaver smtp-user-enum golang dnsutils azure-cli \
+  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 
 ##### Space for git packages
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Installing custom ${GREEN}github${RESET} repos"
 git clone -q -b master https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite /opt/privesc_scripts
+
+##### Space for pip packages
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Installing custom ${GREEN}pip${RESET} packages"
+pip install roadrecon
+
+#-Custom Packages End----------------------------------------------------------------#
 
 #--- Configuring XFCE (Power Options)
 cat <<EOF > /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-power-manager.xml
@@ -517,13 +533,6 @@ chmod +x "${file}"
 
 ####Install AzureStorage
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}StorageExplorer${RESET} ~ Azure Storage GUI tool"
-wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.asc.gpg
-sudo mv microsoft.asc.gpg /etc/apt/trusted.gpg.d/
-wget -q https://packages.microsoft.com/config/ubuntu/18.04/prod.list 
-sudo mv prod.list /etc/apt/sources.list.d/microsoft-prod.list
-sudo chown root:root /etc/apt/trusted.gpg.d/microsoft.asc.gpg
-sudo chown root:root /etc/apt/sources.list.d/microsoft-prod.list
-sudo apt update
 sudo apt -y install aspnetcore-runtime-2.1
 mkdir /opt/azure-storage-explorer
 wget https://download.microsoft.com/download/A/E/3/AE32C485-B62B-4437-92F7-8B6B2C48CB40/StorageExplorer-linux-x64.tar.gz -O /tmp/StorageExplorer-linux-x64.tar.gz
@@ -725,9 +734,6 @@ unzip /tmp/beRoot.zip -d /opt/BeRoot-git/Windows
 
 ##### Install Sublime
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}MPC${RESET} ~ Sublime Text"
-wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add - 
-echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list 
-apt-get update 
 apt-get install sublime-text
 
 ##### Install ILSpy
@@ -847,7 +853,7 @@ sudo updatedb
 
 ##### Time taken
 finish_time=$(date +%s)
-echo -e "\n\n ${YELLOW}[i]${RESET} Time (roughly) taken: ${YELLOW}$(( $(( finish_time - start_time )) / 60 )) minutes${RESET}"
+echo -e "\n\n ${YELLOW}[i]${RESET} Time (roughly) taken: ${YELLOW}$(( $(( finish_time - start_time)) / 60 )) minutes${RESET}"
 echo -e " ${YELLOW}[i]${RESET} Stages skipped: $(( TOTAL-STAGE ))"
 
 
