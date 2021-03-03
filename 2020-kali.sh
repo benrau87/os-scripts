@@ -220,8 +220,8 @@ grep -q '^## Directory navigation aliases' "${file}" 2>/dev/null \
 grep -q '^## Extract file' "${file}" 2>/dev/null \
   || cat <<EOF >> "${file}" \
     || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
-## Extract file, example. "ex package.tar.bz2"
-ex() {
+## Extract file, example. "extract package.tar.bz2"
+extract() {
   if [[ -f \$1 ]]; then
     case \$1 in
       *.tar.bz2) tar xjf \$1 ;;
