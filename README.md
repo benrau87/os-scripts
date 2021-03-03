@@ -26,7 +26,7 @@ Postman
 and others
 - - -
 
-## Kali Rolling 2020.4 Tested
+## Kali Rolling 2021.1 Tested
 
 - - -
-Note: for RDP you will need to restart the VM and DO NOT launch a remote console session, then you can RDP with local creds.
+### Note: for RDP you will need to restart the VM and DO NOT launch a remote console session, then you can RDP with local creds.
