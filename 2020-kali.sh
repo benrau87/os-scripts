@@ -721,10 +721,9 @@ file=/usr/local/bin/covenant-git
 cat <<EOF > "${file}" \
   || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
 #!/bin/bash
-cd /opt/covenant-git/Covenant && dotnet run
+cd /opt/covenant-git/Covenant && sudo dotnet run
 EOF
 chmod +x "${file}"
-
 
 ##### Install BeRoot
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}BeRoot${RESET} ~ Privesc Tool"
