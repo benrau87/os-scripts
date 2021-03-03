@@ -97,7 +97,7 @@ fi
 
 ##### Space for apt packages
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Installing custom ${GREEN}apt${RESET} packages"
-apt -y install bloodhound gdb dbeaver smtp-user-enum golang dnsutils azure-cli
+apt -y install bloodhound gdb dbeaver smtp-user-enum golang dnsutils
 
 ##### Space for git packages
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Installing custom ${GREEN}github${RESET} repos"
@@ -502,6 +502,22 @@ chmod +x "${file}"
 
 ####Install pacu
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}PACU${RESET} ~ AWS scanner"
+wget https://dl.pstmn.io/download/latest/linux64 
+tar -xvf linux64
+rm linux64
+mv Postman /opt/postman
+#--- Add to path
+mkdir -p /usr/local/bin/
+file=/usr/local/bin/postman
+cat <<EOF > "${file}" \
+  || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
+#!/bin/bash
+cd /opt/postman/app && ./Postman
+EOF
+chmod +x "${file}"
+
+####Install Postman
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Postman${RESET} ~ API tool"
 git clone -q -b master https://github.com/RhinoSecurityLabs/pacu /opt/pacu-git
 pushd /opt/pacu-git/ >/dev/null
 bash /opt/pacu-git/install.sh
