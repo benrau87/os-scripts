@@ -515,6 +515,30 @@ cd /opt/discover-git/ && ./discover.sh "\$@"
 EOF
 chmod +x "${file}"
 
+####Install AzureStorage
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}StorageExplorer${RESET} ~ Azure Storage GUI tool"
+wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.asc.gpg
+sudo mv microsoft.asc.gpg /etc/apt/trusted.gpg.d/
+wget -q https://packages.microsoft.com/config/ubuntu/18.04/prod.list 
+sudo mv prod.list /etc/apt/sources.list.d/microsoft-prod.list
+sudo chown root:root /etc/apt/trusted.gpg.d/microsoft.asc.gpg
+sudo chown root:root /etc/apt/sources.list.d/microsoft-prod.list
+sudo apt update
+sudo apt -y install aspnetcore-runtime-2.1
+mkdir /opt/azure-storage-explorer
+wget https://download.microsoft.com/download/A/E/3/AE32C485-B62B-4437-92F7-8B6B2C48CB40/StorageExplorer-linux-x64.tar.gz -O /tmp/StorageExplorer-linux-x64.tar.gz
+tar xvf /tmp/StorageExplorer-linux-x64.tar.gz -C /opt/azure-storage-explorer/
+pushd /opt/azure-storage-explorer/ >/dev/null
+#--- Add to path
+mkdir -p /usr/local/bin/
+file=/usr/local/bin/storageexplorer
+cat <<EOF > "${file}" \
+  || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
+#!/bin/bash
+cd /opt/azure-storage-explorer/ && bash StorageExplorer
+EOF
+chmod +x "${file}"
+
 ####Install Postman
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Postman${RESET} ~ API tool"
 wget https://dl.pstmn.io/download/latest/linux64 
