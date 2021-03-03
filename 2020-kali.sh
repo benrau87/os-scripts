@@ -500,8 +500,8 @@ cd /opt/discover-git/ && ./discover.sh "\$@"
 EOF
 chmod +x "${file}"
 
-####Install pacu
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}PACU${RESET} ~ AWS scanner"
+####Install Postman
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Postman${RESET} ~ API tool"
 wget https://dl.pstmn.io/download/latest/linux64 
 tar -xvf linux64
 rm linux64
@@ -516,8 +516,8 @@ cd /opt/postman/app && ./Postman
 EOF
 chmod +x "${file}"
 
-####Install Postman
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Postman${RESET} ~ API tool"
+####Install pacu
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Pacu${RESET} ~ AWS scanner"
 git clone -q -b master https://github.com/RhinoSecurityLabs/pacu /opt/pacu-git
 pushd /opt/pacu-git/ >/dev/null
 bash /opt/pacu-git/install.sh
