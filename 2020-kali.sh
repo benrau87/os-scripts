@@ -107,7 +107,6 @@ git clone -q -b master https://github.com/carlospolop/privilege-escalation-aweso
 cat <<EOF > /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-power-manager.xml
   || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
 <?xml version="1.0" encoding="UTF-8"?>
-
 <channel name="xfce4-power-manager" version="1.0">
   <property name="xfce4-power-manager" type="empty">
     <property name="power-button-action" type="empty"/>
@@ -221,7 +220,6 @@ grep -q '^## Directory navigation aliases' "${file}" 2>/dev/null \
 grep -q '^## Extract file' "${file}" 2>/dev/null \
   || cat <<EOF >> "${file}" \
     || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
-
 ## Extract file, example. "ex package.tar.bz2"
 ex() {
   if [[ -f \$1 ]]; then
@@ -310,25 +308,19 @@ else
   cat <<EOF > "${file}"
 ## Don't display the copyright page
 startup_message off
-
 ## tab-completion flash in heading bar
 vbell off
-
 ## Keep scrollback n lines
 defscrollback 10000
-
 ## Hardstatus is a bar of text that is visible in all screens
 hardstatus on
 hardstatus alwayslastline
 hardstatus string '%{gk}%{G}%H %{g}[%{Y}%l%{g}] %= %{wk}%?%-w%?%{=b kR}(%{W}%n %t%?(%u)%?%{=b kR})%{= kw}%?%+w%?%?%= %{g} %{Y} %Y-%m-%d %C%a %{W}'
-
 ## Title bar
 termcapinfo xterm ti@:te@
-
 ## Default windows (syntax: screen -t label order command)
 screen -t bash1 0
 screen -t bash2 1
-
 ## Select the default window
 select 0
 EOF
@@ -414,10 +406,8 @@ if [[ -f "${file}" ]]; then
 else
   cat <<EOF > "${file}"
 #run post/windows/escalate/getsystem
-
 #run migrate -f -k
 #run migrate -n "explorer.exe" -k    # Can trigger AV alerts by touching explorer.exe...
-
 #run post/windows/manage/smart_migrate
 #run post/windows/gather/smart_hashdump
 EOF
@@ -428,16 +418,12 @@ if [[ -f "${file}" ]]; then
 else
   cat <<EOF > "${file}"
 #load auto_add_route
-
 #load alias
 #alias del rm
 #alias handler use exploit/multi/handler
-
 #load sounds
-
 setg TimestampOutput true
 setg VERBOSE true
-
 setg ExitOnSession false
 #setg EnableStageEncoding true
 setg LHOST 0.0.0.0
@@ -511,6 +497,21 @@ cat <<EOF > "${file}" \
   || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
 #!/bin/bash
 cd /opt/discover-git/ && ./discover.sh "\$@"
+EOF
+chmod +x "${file}"
+
+####Install pacu
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}PACU${RESET} ~ AWS scanner"
+git clone -q -b master https://github.com/RhinoSecurityLabs/pacu /opt/pacu-git
+pushd /opt/pacu-git/ >/dev/null
+bash /opt/pacu-git/install.sh
+#--- Add to path
+mkdir -p /usr/local/bin/
+file=/usr/local/bin/pacu-git
+cat <<EOF > "${file}" \
+  || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
+#!/bin/bash
+cd /opt/pacu-git/ && python3 pacu.py
 EOF
 chmod +x "${file}"
 
