@@ -106,7 +106,7 @@ fi
 
 ##### Space for apt packages
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Installing custom ${GREEN}apt${RESET} packages"
-apt -y install bloodhound gdb dbeaver smtp-user-enum golang dnsutils azure-cli \
+apt -y install bloodhound gdb dbeaver smtp-user-enum golang dnsutils azure-cli mono-devel\
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 
 ##### Space for git packages
@@ -740,11 +740,22 @@ apt-get install sublime-text
 #wget https://packages.microsoft.com/config/ubuntu/19.10/packages-microsoft-prod.deb -O /tmp/packages-microsoft-prod.deb
 #dpkg -i /tmp/packages-microsoft-prod.deb
 #apt update
-#apt -y install dotnet-sdk-3.1
-#git clone -q -b master https://github.com/icsharpcode/ILSpy /opt/ILSpy-git
-#cd /opt/ILSpy-git
-#git submodule update --init --recursive
-#dotnet build Frontends.sln
+apt -y install dotnet-sdk-3.1
+git clone -q -b master https://github.com/icsharpcode/AvaloniaILSpy /opt/ILSpy-git
+cd /opt/ILSpy-git
+wget https://packages.microsoft.com/config/ubuntu/19.10/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+sudo dpkg -i packages-microsoft-prod.deb
+git submodule update --init --recursive
+bash build.sh
+mkdir -p /usr/local/bin/
+file=/usr/local/bin/ILSpy-git
+cat <<EOF > "${file}" \
+  || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
+#!/bin/bash
+cd /opt/ILSpy-git/artifacts/linux-x64/ && ./ILSpy
+EOF
+chmod +x "${file}"
+cd -
 #cd -
 
 ##### Install bettercap
