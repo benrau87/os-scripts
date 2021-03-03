@@ -466,6 +466,21 @@ systemctl enable xrdp
 systemctl restart xrdp \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 
+####Install discover
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}AutoVPN${RESET} ~ Auto VPN connector"
+mkdir /opt/autovpn
+cp autovpn.sh /opt/autovpn
+pushd /opt/autovpn/ >/dev/null
+#--- Add to path
+mkdir -p /usr/local/bin/
+file=/usr/local/bin/autovpn
+cat <<EOF > "${file}" \
+  || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
+#!/bin/bash
+cd /opt/autovpn/ && sudo bash autovpn.sh
+EOF
+chmod +x "${file}"
+
 ####Install doubletap
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Doubletap${RESET} ~ Vuln scanner"
 git clone -q -b master https://github.com/benrau87/doubletap /opt/doubletap-git/ 
@@ -531,7 +546,7 @@ cd /opt/pacu-git/ && python3 pacu.py
 EOF
 chmod +x "${file}"
 
-####Install pacu
+####Install JWT
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}JWT-Tool${RESET} ~ JSON web token tool"
 git clone -q -b master https://github.com/ticarpi/jwt_tool /opt/jwt_tool-git
 pushd /opt/jwt_tool-git/ >/dev/null
@@ -542,7 +557,7 @@ file=/usr/local/bin/jwt_tool-git
 cat <<EOF > "${file}" \
   || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
 #!/bin/bash
-cd /opt/jwt_tool-git/ && python3 jwt_tool "\$@"
+cd /opt/jwt_tool-git/ && sudo python3 jwt_tool "\$@"
 EOF
 chmod +x "${file}"
 
