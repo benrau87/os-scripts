@@ -97,7 +97,7 @@ fi
 
 ##### Space for apt packages
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Installing custom ${GREEN}apt${RESET} packages"
-apt -y install bloodhound gdb dbeaver smtp-user-enum golang dnsutils
+apt -y install bloodhound gdb dbeaver smtp-user-enum golang dnsutils azure-cli
 
 ##### Space for git packages
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Installing custom ${GREEN}github${RESET} repos"
@@ -530,6 +530,22 @@ cat <<EOF > "${file}" \
 cd /opt/pacu-git/ && python3 pacu.py
 EOF
 chmod +x "${file}"
+
+####Install pacu
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}JWT-Tool${RESET} ~ JSON web token tool"
+git clone -q -b master https://github.com/ticarpi/jwt_tool /opt/jwt_tool-git
+pushd /opt/jwt_tool-git/ >/dev/null
+python3 -m pip install -r /opt/jwt_tool-git/requirement.txt
+#--- Add to path
+mkdir -p /usr/local/bin/
+file=/usr/local/bin/jwt_tool-git
+cat <<EOF > "${file}" \
+  || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
+#!/bin/bash
+cd /opt/jwt_tool-git/ && python3 jwt_tool "\$@"
+EOF
+chmod +x "${file}"
+
 
 ####Install FFUF
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}ffuf${RESET} ~ Directory scanner"
