@@ -109,7 +109,7 @@ fi
 
 ##### Space for apt packages
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Installing custom ${GREEN}apt${RESET} packages"
-apt -y install bloodhound gdb dbeaver smtp-user-enum golang dnsutils azure-cli mono-devel zip unzip python-pip python3-ldap libsasl2-dev python-dev libldap2-dev libssl-dev python3-pip gobuster\
+apt -y install bloodhound gdb dbeaver smtp-user-enum golang dnsutils azure-cli mono-devel zip unzip python3-pip python3-ldap libsasl2-dev python-dev libldap2-dev libssl-dev python3-pip gobuster\
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 
 ##### Space for git packages
@@ -123,6 +123,7 @@ pip install roadrecon
 #-Custom Packages End----------------------------------------------------------------#
 
 #--- Configuring XFCE (Power Options)
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Configuring ${GREEN}power options${RESET} XFCE"
 cat <<EOF > /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-power-manager.xml
   || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
 <?xml version="1.0" encoding="UTF-8"?>
@@ -145,17 +146,6 @@ grep -q "HISTSIZE" "${file}" \
 grep -q "HISTFILESIZE" "${file}" \
  || echo "HISTFILESIZE=10000" >> "${file}"             # Bash history (file .bash_history)
 
-##### Configure bash - all users
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Configuring ${GREEN}bash${RESET} ~ CLI shell"
-file=~/.zshrc; [ -e "${file}" ] && cp -n $file{,.bkup}   #~/.bashrc
-grep -q "HISTSIZE" "${file}" \
- || echo "HISTSIZE=100000" >> "${file}"                 # Bash history (memory scroll back)
-grep -q "HISTFILESIZE" "${file}" \
- || echo "HISTFILESIZE=100000" >> "${file}"             # Bash history (file .bash_history)
-
-#--- Apply new configs
-source "${file}" || source ~/.zshrc
-#source "${file}" || source /etc/zsh/zshrc
 
 ##### Install bash colour - all users
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}bash colour${RESET} ~ colours shell output"
@@ -181,8 +171,9 @@ file=/etc/skel/.bashrc   #; [ -e "${file}" ] && cp -n $file{,.bkup}
 sed -i 's/.*force_color_prompt=.*/force_color_prompt=yes/' "${file}"
 
 #--- Apply new configs
-#source "${file}" || source ~/.zshrc
-source "${file}" || source /etc/zsh/zshrc
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Applying ${GREEN}bash${RESET} configs"
+source "${file}" || source ~/.zshrc
+#source "${file}" || source /etc/zsh/zshrc
 
 ##### Configure aliases - root user
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Configuring ${GREEN}aliases${RESET} ~ CLI shortcuts"
