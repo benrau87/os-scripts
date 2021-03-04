@@ -109,7 +109,7 @@ fi
 
 ##### Space for apt packages
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Installing custom ${GREEN}apt${RESET} packages"
-apt -y install bloodhound gdb dbeaver smtp-user-enum golang dnsutils azure-cli mono-devel\
+apt -y install bloodhound gdb dbeaver smtp-user-enum golang dnsutils azure-cli mono-devel zip unzip python-pip python3-ldap libsasl2-dev python-dev libldap2-dev libssl-dev python3-pip gobuster\
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 
 ##### Space for git packages
@@ -509,7 +509,6 @@ pushd /opt/doubletap-git/ >/dev/null
 #--- Add to path
 mkdir -p /usr/local/bin/
 file=/usr/local/bin/doubletap-git
-apt -y -qq install python3-pip gobuster
 pip3 install pyrebase
 pip3 install netifaces
 nmap --script-updatedb
@@ -691,7 +690,6 @@ chmod +x "${file}"
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Windapsearch${RESET} ~ LDAP scanning framework"
 git clone -q https://github.com/ropnop/windapsearch /opt/windapsearch-git
 pushd /opt/windapsearch-git/ >/dev/null
-sudo apt -y install python-pip python3-ldap libsasl2-dev python-dev libldap2-dev libssl-dev
 #pip install -r /opt/windapsearch-git/requirements.git
 #--- Add to path
 mkdir -p /usr/local/bin/
@@ -752,7 +750,7 @@ sudo dpkg -i packages-microsoft-prod.deb
 git submodule update --init --recursive
 bash build.sh
 mkdir -p /usr/local/bin/
-file=/usr/local/bin/ILSpy-git
+file=/usr/local/bin/ilspy-git
 cat <<EOF > "${file}" \
   || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
 #!/bin/bash
@@ -765,11 +763,6 @@ cd -
 ##### Install bettercap
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}bettercap${RESET} ~ the better etter"
 apt -y -qq install bettercap \
-  || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
-
-##### Install zip & unzip
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}zip${RESET} & ${GREEN}unzip${RESET} ~ CLI file extractors"
-apt -y -qq install zip unzip \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 
 ##### Install VPN support
