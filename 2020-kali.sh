@@ -852,14 +852,12 @@ source "${file}" || source ~/etc/bash/bash.rc
 #--- Clean package manager
 for FILE in clean autoremove; do apt -y -qq "${FILE}"; done
 apt -y -qq purge $(dpkg -l | tail -n +6 | egrep -v '^(h|i)i' | awk '{print $2}')   # Purged packages
-#--- Update slocate database
-sudo updatedb
 #--- Reset folder location
 cd ~/ &>/dev/null
 #--- Remove any history files (as they could contain sensitive info)
 history -cw 2>/dev/null
 for i in $(cut -d: -f6 /etc/passwd | sort -u); do
-  [ -e "${i}" ] && find "${i}" -type f -name '.*_history' -delete
+  [ -e "${i}" ] && sudo find "${i}" -type f -name '.*_history' -delete
 done
 
 ##### updatedb
