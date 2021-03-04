@@ -5,7 +5,7 @@
 # сообщить об ошибке на русском вы можете на странице: https://HackWare.ru/?p=15429
  
 # you can change these parameters:
-country='US' # empty for any or JP, KR, US, TH, etc.
+country='' # empty for any or JP, KR, US, TH, etc.
 useSavedVPNlist=1 # set to 1 if you don't want to download VPN list every time you restart this script, otherwise set to 0
 useFirstServer=0 # set the value to 0 to choose a random VPN server, otherwise set to 1 (maybe the first one has higher score)
 vpnList='/tmp/vpns.tmp'
