@@ -45,6 +45,7 @@ sed -i '/kali/ s/^\( \|\t\|\)deb cdrom/#deb cdrom/g' "${file}"
 #--- incase we were interrupted
 dpkg --configure -a
 #--- Custom repos
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Enabling custom OS ${GREEN}network repositories${RESET}"
 wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.asc.gpg
 sudo mv microsoft.asc.gpg /etc/apt/trusted.gpg.d/
 wget -q https://packages.microsoft.com/config/ubuntu/18.04/prod.list 
@@ -54,6 +55,7 @@ sudo chown root:root /etc/apt/sources.list.d/microsoft-prod.list
 wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add - 
 echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list 
 #--- Update
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Updating ${GREEN}OS${RESET}"
 apt -qq update
 if [[ "$?" -ne 0 ]]; then
   echo -e ' '${RED}'[!]'${RESET}" There was an ${RED}issue accessing network repositories${RESET}" 1>&2
@@ -63,6 +65,7 @@ if [[ "$?" -ne 0 ]]; then
   exit 1
 fi
 #--- Upgrade
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Upgrading ${GREEN}OS${RESET}"
 apt -qq -y upgrade
 if [[ "$?" -ne 0 ]]; then
   echo -e ' '${RED}'[!]'${RESET}" There was an ${RED}issue accessing network repositories${RESET}" 1>&2
