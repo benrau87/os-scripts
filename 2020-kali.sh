@@ -580,9 +580,9 @@ chmod +x "${file}"
 
 ####Install caldera
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Caldera${RESET} ~ Another C2"
-git clone -q -b clone https://github.com/mitre/caldera.git /opt/caldera-git
+git clone https://github.com/mitre/caldera.git --recursive --branch 3.0.0 /opt/caldera-git
 pushd /opt/caldera-git/ >/dev/null
-pip3 install -r /opt/caldera-git/requirements.txt
+pip3 install -r requirements.txt
 #--- Add to path
 mkdir -p /usr/local/bin/
 file=/usr/local/bin/caldera-git
