@@ -536,7 +536,7 @@ file=/usr/local/bin/storageexplorer
 cat <<EOF > "${file}" \
   || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
 #!/bin/bash
-cd /opt/azure-storage-explorer/ && bash StorageExplorer
+cd /opt/azure-storage-explorer/ && sudo bash StorageExplorer
 EOF
 chmod +x "${file}"
 
