@@ -118,7 +118,7 @@ git clone -q -b master https://github.com/carlospolop/privilege-escalation-aweso
 
 ##### Space for pip packages
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Installing custom ${GREEN}pip${RESET} packages"
-pip install roadrecon git+https://github.com/Tib3rius/AutoRecon.git
+pip install roadrecon git+https://github.com/Tib3rius/AutoRecon.git kube-hunter
 
 #-Custom Packages End----------------------------------------------------------------#
 
