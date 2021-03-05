@@ -273,7 +273,7 @@ grep -q '^## airodump-ng' "${file}" 2>/dev/null \
   || echo -e '## airodump-ng \nalias airodump-ng="airodump-ng --manufacturer --wps --uptime"\n' >> "${file}"
 grep -q '^## metasploit' "${file}" 2>/dev/null \
   || (echo -e '## metasploit\nalias msfc="systemctl start postgresql; msfdb start; msfconsole -q \"\$@\""' >> "${file}" \
-    && echo -e 'alias msfconsole="systemctl start postgresql; msfdb start; msfconsole \"\$@\""\n' >> "${file}" )
+    && echo -e 'alias msfconsole="sudo systemctl start postgresql; sudo msfdb start; sudo msfconsole \"\$@\""\n' >> "${file}" )
 [ "${openVAS}" != "false" ] \
   && (grep -q '^## openvas' "${file}" 2>/dev/null \
     || echo -e '## openvas\nalias openvas="openvas-stop; openvas-start; sleep 3s; xdg-open https://127.0.0.1:9392/ >/dev/null 2>&1"\n' >> "${file}")
