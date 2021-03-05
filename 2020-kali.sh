@@ -221,6 +221,8 @@ grep -q '^## Get header' "${file}" 2>/dev/null \
   || echo -e '## Get header\nalias header="curl -I"\n' >> "${file}"
 grep -q '^## Get external IP address' "${file}" 2>/dev/null \
   || echo -e '## Get external IP address\nalias ipx="curl -s http://ipinfo.io/ip"\n' >> "${file}"
+  grep -q '^## Get internal IP address' "${file}" 2>/dev/null \
+  || echo -e '## Get internal IP address\nalias ipl="hostname -I"\n' >> "${file}"
 grep -q '^## DNS - External IP #1' "${file}" 2>/dev/null \
   || echo -e '## DNS - External IP #1\nalias dns1="dig +short @resolver1.opendns.com myip.opendns.com"\n' >> "${file}"
 grep -q '^## DNS - External IP #2' "${file}" 2>/dev/null \
