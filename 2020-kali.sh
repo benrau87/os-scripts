@@ -111,7 +111,7 @@ fi
 
 ##### Space for apt packages
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Installing custom ${GREEN}apt${RESET} packages"
-apt -y install bloodhound gdb dbeaver smtp-user-enum golang dnsutils azure-cli mono-devel zip unzip python3-pip python3-ldap libsasl2-dev python-dev libldap2-dev libssl-dev python3-pip gobuster kubectl\
+apt -y install bloodhound gdb dbeaver smtp-user-enum golang dnsutils azure-cli mono-devel zip unzip python3-pip python3-ldap libsasl2-dev python-dev libldap2-dev libssl-dev python3-pip gobuster kubectl docker.io\
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 
 ##### Space for git packages
