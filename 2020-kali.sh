@@ -111,7 +111,7 @@ fi
 
 ##### Space for apt packages
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Installing custom ${GREEN}apt${RESET} packages"
-apt -y install bloodhound gdb dbeaver smtp-user-enum golang dnsutils azure-cli mono-devel zip unzip python3-pip python3-ldap libsasl2-dev python-dev libldap2-dev libssl-dev python3-pip gobuster kubectl docker.io\
+apt -y install bloodhound gdb dbeaver smtp-user-enum golang dnsutils azure-cli mono-devel zip unzip python3-pip python3-ldap libsasl2-dev python-dev libldap2-dev libssl-dev python3-pip gobuster kubectl aspnetcore-runtime-2.1 dotnet-sdk-3.1 docker.io\
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 
 ##### Space for git packages
@@ -459,9 +459,7 @@ source "${file}" || source /etc/zsh/zshrc
 echo "Started at: $(date)"
 systemctl start postgresql
 msfdb start
-msfconsole -q -x 'version;db_status;sleep 310;exit'
-
-apt-get install --fix-broken
+msfconsole -q -x 'version;db_status;sleep 120;exit'
 
 ##### Install xrdp
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}zip${RESET} & ${GREEN}xrdp${RESET} ~ RDP support"
@@ -528,7 +526,6 @@ chmod +x "${file}"
 
 ####Install AzureStorage
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}StorageExplorer${RESET} ~ Azure Storage GUI tool"
-sudo apt -y install aspnetcore-runtime-2.1
 mkdir /opt/azure-storage-explorer
 wget https://download.microsoft.com/download/A/E/3/AE32C485-B62B-4437-92F7-8B6B2C48CB40/StorageExplorer-linux-x64.tar.gz -O /tmp/StorageExplorer-linux-x64.tar.gz
 tar xvf /tmp/StorageExplorer-linux-x64.tar.gz -C /opt/azure-storage-explorer/
@@ -754,7 +751,6 @@ apt-get install sublime-text
 #wget https://packages.microsoft.com/config/ubuntu/19.10/packages-microsoft-prod.deb -O /tmp/packages-microsoft-prod.deb
 #dpkg -i /tmp/packages-microsoft-prod.deb
 #apt update
-apt -y install dotnet-sdk-3.1
 git clone -q -b master https://github.com/icsharpcode/AvaloniaILSpy /opt/ILSpy-git
 cd /opt/ILSpy-git
 wget https://packages.microsoft.com/config/ubuntu/19.10/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
@@ -854,6 +850,7 @@ source "${file}" || source ~/etc/bash/bash.rc
 
 ##### Clean the system
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) ${GREEN}Cleaning${RESET} the system"
+apt-get install --fix-broken
 #--- Clean package manager
 for FILE in clean autoremove; do apt -y -qq "${FILE}"; done
 apt -y -qq purge $(dpkg -l | tail -n +6 | egrep -v '^(h|i)i' | awk '{print $2}')   # Purged packages
