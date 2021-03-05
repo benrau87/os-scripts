@@ -578,9 +578,9 @@ cd /opt/pacu-git/ && python3 pacu.py
 EOF
 chmod +x "${file}"
 
-####Install pacu
+####Install caldera
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Caldera${RESET} ~ Another C2"
-git clone -q -b master clone https://github.com/mitre/caldera.git /opt/caldera-git
+git clone -q -b clone https://github.com/mitre/caldera.git /opt/caldera-git
 pushd /opt/caldera-git/ >/dev/null
 pip3 install -r /opt/caldera-git/requirements.txt
 #--- Add to path
