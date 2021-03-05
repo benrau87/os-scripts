@@ -543,8 +543,8 @@ chmod +x "${file}"
 ####Install ngrok
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}ngrok${RESET} ~ Expose localhost to internet"
 wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip -O /tmp/ngrok_dl.zip
-unzip /tmp/ngrok_dl.zip 
-sudo mv /tmp/ngrok /usr/local/bin
+unzip /tmp/ngrok_dl.zip
+sudo mv /tmp/ngrok /usr/local/bin/
 
 ####Install Postman
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Postman${RESET} ~ API tool"
@@ -573,7 +573,7 @@ file=/usr/local/bin/pacu-git
 cat <<EOF > "${file}" \
   || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
 #!/bin/bash
-cd /opt/pacu-git/ && python3 pacu.py
+cd /opt/pacu-git/ && sudo python3 pacu.py
 EOF
 chmod +x "${file}"
 
