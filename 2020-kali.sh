@@ -455,11 +455,11 @@ source "${file}" || source /etc/zsh/zshrc
 
 
 #--- First time run with Metasploit
-(( STAGE++ )); echo -e " ${GREEN}[i]${RESET} (${STAGE}/${TOTAL}) ${GREEN}Starting Metasploit for the first time${RESET} ~ this ${BOLD}will take a ~350 seconds${RESET} (~6 mintues)"
+(( STAGE++ )); echo -e " ${GREEN}[i]${RESET} (${STAGE}/${TOTAL}) ${GREEN}Starting Metasploit for the first time${RESET} ~ this ${BOLD}will take a ~20 seconds${RESET}"
 echo "Started at: $(date)"
 systemctl start postgresql
 msfdb start
-msfconsole -q -x 'version;db_status;sleep 120;exit'
+msfconsole -q -x 'version;db_status;sleep 10;exit'
 
 ##### Install xrdp
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}zip${RESET} & ${GREEN}xrdp${RESET} ~ RDP support"
