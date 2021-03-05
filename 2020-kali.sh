@@ -540,12 +540,6 @@ cd /opt/azure-storage-explorer/ && sudo bash StorageExplorer
 EOF
 chmod +x "${file}"
 
-####Install ngrok
-(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}ngrok${RESET} ~ Expose localhost to internet"
-wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip -O /tmp/ngrok_dl.zip
-unzip -q /tmp/ngrok*
-sudo mv /tmp/ngrok /usr/local/bin/
-
 ####Install Postman
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Postman${RESET} ~ API tool"
 wget https://dl.pstmn.io/download/latest/linux64 
@@ -611,6 +605,12 @@ cd /opt/jwt_tool-git/ && sudo python3 jwt_tool.py "\$@"
 EOF
 chmod +x "${file}"
 
+####Install ngrok
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}ngrok${RESET} ~ Expose localhost to internet"
+wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip -O /tmp/ngrok_dl.zip
+pushd /tmp/ >/dev/null
+sudo unzip -q ngrok_dl.zip
+sudo mv ngrok /usr/local/bin/
 
 ####Install FFUF
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}ffuf${RESET} ~ Directory scanner"
