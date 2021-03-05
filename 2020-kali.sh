@@ -578,6 +578,25 @@ cd /opt/pacu-git/ && python3 pacu.py
 EOF
 chmod +x "${file}"
 
+####Install pacu
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}Caldera${RESET} ~ Another C2"
+git clone -q -b master clone https://github.com/mitre/caldera.git /opt/caldera-git
+pushd /opt/caldera-git/ >/dev/null
+pip3 install -r /opt/caldera-git/requirements.txt
+#--- Add to path
+mkdir -p /usr/local/bin/
+file=/usr/local/bin/caldera-git
+cat <<EOF > "${file}" \
+  || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
+#!/bin/bash
+cd /opt/caldera-git/ && sudo python3 server.py --insecure & 
+sleep 10
+firefox-esr http://localhost:8888
+echo "User=red"
+echo "Password=admin"
+EOF
+chmod +x "${file}"
+
 ####Install JWT
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}JWT-Tool${RESET} ~ JSON web token tool"
 git clone -q -b master https://github.com/ticarpi/jwt_tool /opt/jwt_tool-git
