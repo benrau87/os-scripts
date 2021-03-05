@@ -616,7 +616,7 @@ file=/usr/local/bin/domainhunter-git
 cat <<EOF > "${file}" \
   || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
 #!/bin/bash
-cd /opt/domainhunter-git && sudo python3 domainhunter.py "\$@"
+cd /opt/domainhunter-git && sudo python3 domainhunter.py
 EOF
 chmod +x "${file}"
 
