@@ -614,7 +614,7 @@ sudo mv ngrok /usr/local/bin/
 
 ####Install FFUF
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}ffuf${RESET} ~ Directory scanner"
-git clone -q -b master https://github.com/ffuf/ffuf /opt/fuff-git/
+git clone -q -b master https://github.com/ffuf/ffuf /opt/ffuf-git/
 pushd /opt/ffuf-git/ >/dev/null
 sudo go build .
 #--- Add to path
