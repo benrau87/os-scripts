@@ -33,9 +33,7 @@ fi
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Checking ${GREEN}NTP sync${RESET}"
 sudo systemctl enable ntp
 sudo service ntp start
-sleep 10 
-sudo service ntp restart
-sleep 5
+sleep 30
 ##### Enable default network repositories ~ http://docs.kali.org/general-use/kali-linux-sources-list-repositories
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Enabling default OS ${GREEN}network repositories${RESET}"
 #--- Add network repositories
