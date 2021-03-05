@@ -605,6 +605,21 @@ cd /opt/jwt_tool-git/ && sudo python3 jwt_tool.py "\$@"
 EOF
 chmod +x "${file}"
 
+####Install domainhunter
+(( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}domainhunter${RESET} ~ OSINT tool for domains"
+sudo git clone -q -b master https://github.com/threatexpress/domainhunter /opt/domainhunter-git
+pushd /opt/domainhunter-git >/dev/null
+python3 -m pip install -r requirements.txt
+#--- Add to path
+mkdir -p /usr/local/bin/
+file=/usr/local/bin/domainhunter-git
+cat <<EOF > "${file}" \
+  || echo -e ' '${RED}'[!] Issue with writing file'${RESET} 1>&2
+#!/bin/bash
+cd /opt/domainhunter-git && sudo python3 domainhunter.py "\$@"
+EOF
+chmod +x "${file}"
+
 ####Install ngrok
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}ngrok${RESET} ~ Expose localhost to internet"
 wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip -O /tmp/ngrok_dl.zip
