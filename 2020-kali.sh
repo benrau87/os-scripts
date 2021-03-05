@@ -54,6 +54,8 @@ sudo chown root:root /etc/apt/trusted.gpg.d/microsoft.asc.gpg
 sudo chown root:root /etc/apt/sources.list.d/microsoft-prod.list
 wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo apt-key add - 
 echo "deb https://download.sublimetext.com/ apt/stable/" | sudo tee /etc/apt/sources.list.d/sublime-text.list 
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
 #--- Update
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Updating ${GREEN}OS${RESET}"
 apt -qq update
@@ -109,7 +111,7 @@ fi
 
 ##### Space for apt packages
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL})  Installing custom ${GREEN}apt${RESET} packages"
-apt -y install bloodhound gdb dbeaver smtp-user-enum golang dnsutils azure-cli mono-devel zip unzip python3-pip python3-ldap libsasl2-dev python-dev libldap2-dev libssl-dev python3-pip gobuster\
+apt -y install bloodhound gdb dbeaver smtp-user-enum golang dnsutils azure-cli mono-devel zip unzip python3-pip python3-ldap libsasl2-dev python-dev libldap2-dev libssl-dev python3-pip gobuster kubectl\
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 
 ##### Space for git packages
