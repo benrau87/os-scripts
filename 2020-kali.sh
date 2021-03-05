@@ -543,7 +543,7 @@ chmod +x "${file}"
 ####Install ngrok
 (( STAGE++ )); echo -e "\n\n ${GREEN}[+]${RESET} (${STAGE}/${TOTAL}) Installing ${GREEN}ngrok${RESET} ~ Expose localhost to internet"
 wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip -O /tmp/ngrok_dl.zip
-unzip /tmp/ngrok_dl.zip
+unzip /tmp/ngrok*
 sudo mv /tmp/ngrok /usr/local/bin/
 
 ####Install Postman
