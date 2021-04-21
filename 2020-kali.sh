@@ -419,36 +419,36 @@ msfdb reinit
 update-rc.d postgresql enable
 sleep 5s
 #--- Autorun Metasploit commands each startup
-file=~/.msf4/msf_autorunscript.rc; [ -e "${file}" ] && cp -n $file{,.bkup}
-if [[ -f "${file}" ]]; then
-  echo -e ' '${RED}'[!]'${RESET}" ${file} detected. Skipping..." 1>&2
-else
-  cat <<EOF > "${file}"
+#file=~/.msf4/msf_autorunscript.rc; [ -e "${file}" ] && cp -n $file{,.bkup}
+#if [[ -f "${file}" ]]; then
+#  echo -e ' '${RED}'[!]'${RESET}" ${file} detected. Skipping..." 1>&2
+#else
+#  cat <<EOF > "${file}"
 #run post/windows/escalate/getsystem
 #run migrate -f -k
 #run migrate -n "explorer.exe" -k    # Can trigger AV alerts by touching explorer.exe...
 #run post/windows/manage/smart_migrate
 #run post/windows/gather/smart_hashdump
-EOF
-fi
-file=~/.msf4/msfconsole.rc; [ -e "${file}" ] && cp -n $file{,.bkup}
-if [[ -f "${file}" ]]; then
-  echo -e ' '${RED}'[!]'${RESET}" ${file} detected. Skipping..." 1>&2
-else
-  cat <<EOF > "${file}"
+#EOF
+#fi
+#file=~/.msf4/msfconsole.rc; [ -e "${file}" ] && cp -n $file{,.bkup}
+#if [[ -f "${file}" ]]; then
+#  echo -e ' '${RED}'[!]'${RESET}" ${file} detected. Skipping..." 1>&2
+#else
+#  cat <<EOF > "${file}"
 #load auto_add_route
 #load alias
 #alias del rm
 #alias handler use exploit/multi/handler
 #load sounds
-setg TimestampOutput true
-setg VERBOSE true
-setg ExitOnSession false
+#setg TimestampOutput true
+#setg VERBOSE true
+#setg ExitOnSession false
 #setg EnableStageEncoding true
-setg LHOST 0.0.0.0
-setg LPORT 443
-EOF
-fi
+#setg LHOST 0.0.0.0
+#setg LPORT 443
+#EOF
+#fi
 #--- Aliases time
 file=/etc/zsh/zshrc; [ -e "${file}" ] && cp -n $file{,.bkup}   #/etc/bash.bash_aliases
 ([[ -e "${file}" && "$(tail -c 1 ${file})" != "" ]]) && echo >> "${file}"
@@ -480,7 +480,6 @@ ResultInactive=no
 ResultActive=yes
 EOF
 systemctl enable xrdp
-systemctl restart xrdp \
   || echo -e ' '${RED}'[!] Issue with apt install'${RESET} 1>&2
 
 ####Install discover
